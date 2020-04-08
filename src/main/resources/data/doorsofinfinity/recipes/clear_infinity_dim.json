@@ -1,0 +1,12 @@
+{
+	"type": "minecraft:crafting_shapeless",
+	"ingredients": [
+		{
+    	  "item": "doorsofinfinity:simulated_infinity_door"
+    	}
+	],
+	"result": {
+		"item": "doorsofinfinity:simulated_infinity_door",
+		"count": 1
+	}
+}

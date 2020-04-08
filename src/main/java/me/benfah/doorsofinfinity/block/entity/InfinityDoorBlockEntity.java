@@ -49,28 +49,46 @@ public class InfinityDoorBlockEntity extends BlockEntity
 
 	public void updateSyncDoor()
 	{
-		syncDoorWorld.setBlockState(syncDoorPos,
-				getSyncEntity().getWorld().getBlockState(getSyncEntity().getPos())
-						.with(InfinityDoorBlock.HINGE, getCachedState().get(InfinityDoorBlock.HINGE))
-						.with(InfinityDoorBlock.OPEN, getCachedState().get(InfinityDoorBlock.OPEN)),
-				10);
-
-		if (world.getDimension().getType() == DOFDimensions.INFINITY_DIM
-				&& world.getEntities(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).isEmpty())
+		if (syncPresent())
 		{
-			PortalManipulation.doCompleteBiWayPortal(getSyncEntity().localPortal, Portal.entityType);
+			syncDoorWorld.setBlockState(syncDoorPos,
+					getSyncEntity().getWorld().getBlockState(getSyncEntity().getPos())
+							.with(InfinityDoorBlock.HINGE, getCachedState().get(InfinityDoorBlock.HINGE))
+							.with(InfinityDoorBlock.OPEN, getCachedState().get(InfinityDoorBlock.OPEN)),
+					10);
+
+			if (world.getDimension().getType() == DOFDimensions.INFINITY_DIM
+					&& world.getEntities(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).isEmpty())
+			{
+				deleteSyncPortal();
+				PortalManipulation.completeBiWayPortal(getSyncEntity().localPortal, Portal.entityType);
+			}
 		}
 
 	}
 
-	public void deletePortals()
+	public boolean syncPresent()
+	{
+		return syncDoorPos != null && syncDoorWorld != null && !syncDoorWorld.getBlockState(syncDoorPos).isAir();
+	}
+	
+	public void deleteLocalPortal()
+	{
+		deletePortals(world, pos);
+	}
+	
+	public void deleteSyncPortal()
+	{
+		deletePortals(syncDoorWorld, syncDoorPos);
+	}
+	
+	private void deletePortals(World world, BlockPos pos)
 	{
 		world.getEntities(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).forEach((portal) ->
 		{
-			PortalManipulation.removeConnectedPortals(portal, (t) ->
-			{
-				t.remove();
-			});
+//			PortalManipulation.removeConnectedPortals(portal, (t) ->
+//			{
+//			});
 			portal.remove();
 		});
 	}
@@ -83,6 +101,8 @@ public class InfinityDoorBlockEntity extends BlockEntity
 		Quaternion rot = new Quaternion(Vector3f.POSITIVE_Y, direction.getOpposite().getHorizontal() * 90, true);
 
 		PersonalDimension personalDim = getOrCreateLinkedDimension();
+		
+		deleteSyncPortal();
 
 		localPortal = PortalCreationHelper.spawn(world, portalPos, 1, 2, rightDirection, DOFDimensions.INFINITY_DIM,
 				personalDim.getPlayerPosCentered().add(0, 1, 0), true, rot);

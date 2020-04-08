@@ -32,7 +32,7 @@ public class PortalCreationHelper
 		portal.rotation = rot;
 		portal.setPos(pos.getX(), pos.getY(), pos.getZ());
 		world.spawnEntity(portal);
-		PortalManipulation.doCompleteBiWayPortal(portal, Portal.entityType);
+		PortalManipulation.completeBiWayPortal(portal, Portal.entityType);
 		return portal;
 	}
 	

@@ -43,7 +43,7 @@ public class InfinityDimHelper
 	
 	public static class PersonalDimension
 	{
-		private static final int INNER_SIZE = 9;
+		private static final int INNER_SIZE = 11;
 		private static final int WALL_THICKNESS = 2;
 
 		private int dimId;

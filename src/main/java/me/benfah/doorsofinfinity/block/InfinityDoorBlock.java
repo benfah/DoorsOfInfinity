@@ -149,7 +149,7 @@ public class InfinityDoorBlock extends BlockWithEntity
 		}
 		if (!world.isClient)
 		{
-			lowerBlockEntity.deletePortals();
+			lowerBlockEntity.deleteLocalPortal();
 		}
 		super.onBreak(world, pos, state, player);
 	}
@@ -314,7 +314,7 @@ public class InfinityDoorBlock extends BlockWithEntity
 		InfinityDoorBlockEntity blockEntity = (InfinityDoorBlockEntity) world.getBlockEntity(pos);
 		if (!state.isAir() && !canPlaceAt(state, world, pos))
 		{
-			blockEntity.deletePortals();
+			blockEntity.deleteLocalPortal();
 			world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), 35);
 			world.breakBlock(pos, true);
 
