@@ -1,0 +1,23 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		"III",
+		"EDE",
+		"III"
+	],
+	"key": {
+		"I": {
+			"item": "doorsofinfinity:simulated_block_of_infinity"
+		},
+		"E": {
+			"item": "minecraft:iron_door"
+		},
+		"D": {
+			"item": "minecraft:diamond"
+		}
+	},
+	"result": {
+		"item": "doorsofinfinity:simulated_infinity_door",
+		"count": 1
+	}
+}

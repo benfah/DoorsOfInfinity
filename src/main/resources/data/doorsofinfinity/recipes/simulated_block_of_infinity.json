@@ -1,0 +1,20 @@
+{
+	"type": "minecraft:crafting_shaped",
+	"pattern": [
+		" O ",
+		"OEO",
+		" O "
+	],
+	"key": {
+		"O": {
+			"item": "minecraft:obsidian"
+		},
+		"E": {
+			"item": "minecraft:ender_eye"
+		}
+	},
+	"result": {
+		"item": "doorsofinfinity:simulated_block_of_infinity",
+		"count": 4
+	}
+}

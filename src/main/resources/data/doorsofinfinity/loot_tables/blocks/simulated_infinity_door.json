@@ -1,0 +1,52 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "functions": [
+            {
+              "function": "minecraft:copy_nbt",
+              "source": "block_entity",
+              "ops": [
+                {
+                  "source": "DimOffset",
+                  "target": "BlockEntityTag.DimOffset",
+                  "op": "replace"
+                },
+                {
+                  "source": "SyncDoorDimId",
+                  "target": "BlockEntityTag.SyncDoorDimId",
+                  "op": "replace"
+                },
+                {
+                  "source": "SyncDoorX",
+                  "target": "BlockEntityTag.SyncDoorX",
+                  "op": "replace"
+                },
+                {
+                  "source": "SyncDoorY",
+                  "target": "BlockEntityTag.SyncDoorY",
+                  "op": "replace"
+                },
+                {
+                  "source": "SyncDoorZ",
+                  "target": "BlockEntityTag.SyncDoorZ",
+                  "op": "replace"
+                }
+              ]
+            }
+          ],
+          "name": "doorsofinfinity:simulated_infinity_door"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ]
+}

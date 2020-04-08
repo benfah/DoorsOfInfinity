@@ -1,0 +1,7 @@
+{
+    "parent": "block/door_bottom",
+    "textures": {
+        "bottom": "doorsofinfinity:block/infinity_door_bottom",
+        "top": "doorsofinfinity:block/infinity_door_top"
+    }
+}
