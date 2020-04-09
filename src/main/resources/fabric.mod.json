@@ -4,12 +4,12 @@
   "version": "${version}",
 
   "name": "Doors of Infinity",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "description": "This mod adds small personal dimensions that can be accessed through a magic door!",
   "authors": [
-    "Me!"
+    "benfah"
   ],
   "license": "CC0-1.0",
-  "icon": "assets/modid/icon.png",
+  "icon": "assets/doorsofinfinity/icon.png",
 
   "environment": "*",
   "entrypoints": {
@@ -28,6 +28,6 @@
     "fabricloader": ">=0.7.4",
     "fabric": "*",
     "minecraft": "1.15.x",
-    "immersive_portals": "*"
+    "immersive_portals": ">=0.25"
   }
 }
