@@ -15,7 +15,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public class InfinityDimension extends Dimension
 {
 	
-    private static final Vec3d FOG_COLOR = new Vec3d(1, 1, 1);
+    private static final Vec3d FOG_COLOR = new Vec3d(0, 0, 0);
 	
 	public InfinityDimension(World world, DimensionType type)
 	{
