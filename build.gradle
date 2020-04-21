@@ -19,7 +19,6 @@ dependencies {
 	include "me.sargunvohra.mcmods:autoconfig1u:2.0.1"
 
 
-	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
 	modImplementation "io.github.prospector:modmenu:1.10.1+build.30"
