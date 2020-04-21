@@ -18,6 +18,7 @@ dependencies {
 
 	include "me.sargunvohra.mcmods:autoconfig1u:2.0.1"
 
+	include "me.shedaniel.cloth:config-2:2.13.2"
 
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
