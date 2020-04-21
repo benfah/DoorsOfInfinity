@@ -20,7 +20,9 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
 	modImplementation "io.github.prospector:modmenu:1.10.1+build.30"
-	
+
+	modCompile "me.sargunvohra.mcmods:autoconfig1u:2.0.1"
+
 	modApi "me.shedaniel.cloth:config-2:2.13.2"
 	
 	compileOnly fileTree(dir: 'libs', include: ['*.jar'])

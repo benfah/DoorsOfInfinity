@@ -18,7 +18,8 @@
     ],
     "client": [
       "me.benfah.doorsofinfinity.DOFModClient"
-    ]
+    ],
+    "modmenu": [ "me.benfah.doorsofinfinity.plugin.ModMenuPlugin" ]
   },
   "mixins": [
     "doorsofinfinity.mixins.json"

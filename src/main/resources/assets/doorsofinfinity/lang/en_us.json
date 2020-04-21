@@ -4,5 +4,6 @@
 	"block.doorsofinfinity.infinity_door": "Infinity Door",
 	"block.doorsofinfinity.block_of_infinity": "Block of Infinity",
 	"block.doorsofinfinity.simulated_infinity_door": "Artificial Infinity Door",
-	"block.doorsofinfinity.simulated_block_of_infinity": "Artificial Block of Infinity"
+	"block.doorsofinfinity.simulated_block_of_infinity": "Artificial Block of Infinity",
+	"text.autoconfig.doorsofinfinity.option.requireDoorBorder": "Require Door Border"
 }
