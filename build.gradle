@@ -14,16 +14,19 @@ dependencies {
 	//to change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+
+	include "me.sargunvohra.mcmods:autoconfig1u:2.0.1"
+
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
-	modImplementation "io.github.prospector:modmenu:1.10.1+build.30"
+	modImplementation "io.github.prospector:modmenu:1.11.1+build.4"
 
-	modCompile "me.sargunvohra.mcmods:autoconfig1u:2.0.1"
+	modApi "me.sargunvohra.mcmods:autoconfig1u:2.0.1"
 
-	modApi "me.shedaniel.cloth:config-2:2.13.2"
+	modApi "me.shedaniel.cloth:config-2:3.3.2-unstable"
 	
 	compileOnly fileTree(dir: 'libs', include: ['*.jar'])
 	

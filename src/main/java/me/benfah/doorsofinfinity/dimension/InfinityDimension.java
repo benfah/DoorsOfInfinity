@@ -26,7 +26,7 @@ public class InfinityDimension extends Dimension
 	public ChunkGenerator<?> createChunkGenerator()
 	{
         EmptyChunkGeneratorConfig emptyChunkGenConfig = new EmptyChunkGeneratorConfig();
-        FixedBiomeSourceConfig biomeConfig = BiomeSourceType.FIXED.getConfig(world.getLevelProperties()).setBiome(DOFDimensions.EMPTY_BIOME);
+        FixedBiomeSourceConfig biomeConfig = BiomeSourceType.FIXED.getConfig(world.getLevelProperties().getSeed()).setBiome(DOFDimensions.EMPTY_BIOME);
         
         return DOFDimensions.EMPTY_CHUNK_GEN.create(world, BiomeSourceType.FIXED.applyConfig(biomeConfig), emptyChunkGenConfig);
 	}
@@ -56,7 +56,7 @@ public class InfinityDimension extends Dimension
 	}
 
 	@Override
-	public Vec3d getFogColor(float skyAngle, float tickDelta)
+	public Vec3d modifyFogColor(Vec3d vec3d, float tickDelta)
 	{
 		return FOG_COLOR;
 	}

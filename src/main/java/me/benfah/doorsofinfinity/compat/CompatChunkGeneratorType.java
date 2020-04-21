@@ -2,6 +2,7 @@ package me.benfah.doorsofinfinity.compat;
 
 import java.util.function.Supplier;
 
+import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -20,11 +21,10 @@ public class CompatChunkGeneratorType<C extends ChunkGeneratorConfig, T extends 
 		super(null, buffetScreenOption, settingsSupplier);
 		this.newFactory = factory;
 	}
-	
-	@Override
-	public T create(World world, BiomeSource biomeSource, C config)
-	{		
-		return newFactory.create(world, biomeSource, config);
-	}
 
+	@Override
+	public T create(IWorld iWorld, BiomeSource biomeSource, C chunkGeneratorConfig)
+	{
+		return newFactory.create(iWorld, biomeSource, chunkGeneratorConfig);
+	}
 }

@@ -97,7 +97,7 @@ public class InfinityDoorBlockEntity extends BlockEntity
 	{
 		Direction direction = getCachedState().get(InfinityDoorBlock.FACING);
 		Direction rightDirection = Direction.fromHorizontal(direction.getHorizontal() + 1);
-		Vec3d portalPos = new Vec3d(pos).add(0.5, 1, 0.5);
+		Vec3d portalPos = new Vec3d(pos.getX(), pos.getY(), pos.getZ()).add(0.5, 1, 0.5);
 		Quaternion rot = new Quaternion(Vector3f.POSITIVE_Y, direction.getOpposite().getHorizontal() * 90, true);
 
 		PersonalDimension personalDim = getOrCreateLinkedDimension();
@@ -152,8 +152,10 @@ public class InfinityDoorBlockEntity extends BlockEntity
 		return link;
 	}
 
+
+
 	@Override
-	public void fromTag(CompoundTag tag)
+	public void fromTag(BlockState state, CompoundTag tag)
 	{
 		if (tag.contains("DimOffset"))
 			link = InfinityDimHelper.getPersonalDimension(tag.getInt("DimOffset"));
@@ -164,7 +166,7 @@ public class InfinityDoorBlockEntity extends BlockEntity
 			syncDoorPos = new BlockPos(tag.getInt("SyncDoorX"), tag.getInt("SyncDoorY"), tag.getInt("SyncDoorZ"));
 		}
 
-		super.fromTag(tag);
+		super.fromTag(state, tag);
 	}
 
 	@Override

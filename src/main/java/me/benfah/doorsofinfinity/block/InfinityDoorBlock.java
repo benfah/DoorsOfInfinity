@@ -13,8 +13,8 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.EntityContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
@@ -61,7 +61,7 @@ public class InfinityDoorBlock extends BlockWithEntity
                         DoorHinge.LEFT)).with(HALF, DoubleBlockHalf.LOWER)));
     }
 
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context)
+    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, ShapeContext context)
     {
         Direction direction = (Direction) state.get(FACING);
         boolean bl = !(Boolean) state.get(OPEN);
@@ -151,14 +151,11 @@ public class InfinityDoorBlock extends BlockWithEntity
         return super.calcBlockBreakingDelta(state, player, world, pos);
     }
 
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env)
+    public boolean canPathfindThrough(BlockState world, BlockView view, BlockPos pos, NavigationType env)
     {
         switch(env)
         {
             case LAND:
-                return (Boolean) world.get(OPEN);
-            case WATER:
-                return false;
             case AIR:
                 return (Boolean) world.get(OPEN);
             default:

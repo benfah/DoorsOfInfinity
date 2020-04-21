@@ -6,6 +6,7 @@ import me.benfah.doorsofinfinity.init.DOFBlocks;
 import me.benfah.doorsofinfinity.init.DOFDimensions;
 import me.benfah.doorsofinfinity.utils.MCUtils;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -67,7 +68,8 @@ public class InfinityDimHelper
 		
 		public Vec3d getPlayerPosCentered()
 		{
-			return new Vec3d(getPlayerPos()).add(0.5, 0, 0.5);
+			BlockPos playerPos = getPlayerPos();
+			return new Vec3d(playerPos.getX(), playerPos.getY(), playerPos.getZ()).add(0.5, 0, 0.5);
 		}
 		
 		public BlockPos getPlayerPos()
