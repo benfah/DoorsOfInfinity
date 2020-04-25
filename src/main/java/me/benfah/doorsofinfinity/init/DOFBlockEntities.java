@@ -13,7 +13,7 @@ public class DOFBlockEntities
 	
 	public static void init()
 	{
-		INFINITY_DOOR = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(DOFMod.MOD_ID, "infinity_door"), BlockEntityType.Builder.create(InfinityDoorBlockEntity::new, DOFBlocks.INFINITY_DOOR).build(null));
+		INFINITY_DOOR = Registry.register(Registry.BLOCK_ENTITY_TYPE, new Identifier(DOFMod.MOD_ID, "infinity_door"), BlockEntityType.Builder.create(InfinityDoorBlockEntity::new, DOFBlocks.INFINITY_DOOR, DOFBlocks.SIMULATED_INFINITY_DOOR).build(null));
 	}
 
 }

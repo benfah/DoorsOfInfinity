@@ -7,6 +7,7 @@ import me.benfah.doorsofinfinity.init.DOFBlocks;
 import me.benfah.doorsofinfinity.init.DOFChunkGen;
 import me.benfah.doorsofinfinity.init.DOFDimensions;
 import me.benfah.doorsofinfinity.init.DOFItems;
+import me.benfah.doorsofinfinity.utils.MCUtils;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
@@ -26,6 +27,8 @@ public class DOFMod implements ModInitializer
 		DOFBlockEntities.init();
 		DOFChunkGen.init();
 		DOFDimensions.init();
+
+		MCUtils.immersivePortalsPresent = FabricLoader.getInstance().isModLoaded("immersive_portals");
 
 		AutoConfig.register(DOFConfig.class, JanksonConfigSerializer::new);
 

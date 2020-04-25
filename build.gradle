@@ -29,7 +29,7 @@ dependencies {
 
 	modApi "me.shedaniel.cloth:config-2:3.3.2-unstable"
 	
-	compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+	compile fileTree(dir: 'libs', include: ['*.jar'])
 	
 	// PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
 	// You may need to force-disable transitiveness on them.
