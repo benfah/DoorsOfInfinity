@@ -12,19 +12,19 @@ import me.benfah.doorsofinfinity.init.DOFDimensions;
 import me.benfah.doorsofinfinity.utils.BoxUtils;
 import me.benfah.doorsofinfinity.utils.MCUtils;
 import me.benfah.doorsofinfinity.utils.PortalCreationHelper;
+import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Tickable;
+import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
-public class InfinityDoorBlockEntity extends BlockEntity
+public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 {
 
 	public PersonalDimension link;
@@ -57,7 +57,7 @@ public class InfinityDoorBlockEntity extends BlockEntity
 							.with(InfinityDoorBlock.OPEN, getCachedState().get(InfinityDoorBlock.OPEN)),
 					10);
 
-			if (world.getDimension().getType() == DOFDimensions.INFINITY_DIM
+			if (MCUtils.immersivePortalsPresent && world.getDimension().getType() == DOFDimensions.INFINITY_DIM
 					&& world.getEntities(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).isEmpty())
 			{
 				deleteSyncPortal();
@@ -101,30 +101,30 @@ public class InfinityDoorBlockEntity extends BlockEntity
 		Quaternion rot = new Quaternion(Vector3f.POSITIVE_Y, direction.getOpposite().getHorizontal() * 90, true);
 
 		PersonalDimension personalDim = getOrCreateLinkedDimension();
-		
-		deleteSyncPortal();
+		if(MCUtils.immersivePortalsPresent)
+		{
+			deleteSyncPortal();
 
-		localPortal = PortalCreationHelper.spawn(world, portalPos, 1, 2, rightDirection, DOFDimensions.INFINITY_DIM,
-				personalDim.getPlayerPosCentered().add(0, 1, 0), true, rot);
+			localPortal = PortalCreationHelper.spawn(world, portalPos, 1, 2, rightDirection, DOFDimensions.INFINITY_DIM,
+					personalDim.getPlayerPosCentered().add(0, 1, 0), true, rot);
+		}
 		updateSyncDoor();
 	}
 
 	public void placeSyncedDoor(World otherWorld, BlockPos otherPos)
 	{
 		BlockState state = getCachedState();
-		if (otherWorld.getBlockState(otherPos).isAir())
-		{
 			otherWorld.setBlockState(otherPos,
 					DOFBlocks.INFINITY_DOOR.getDefaultState()
 							.with(InfinityDoorBlock.HINGE, state.get(InfinityDoorBlock.HINGE))
-							.with(InfinityDoorBlock.FACING, Direction.NORTH)
+							.with(InfinityDoorBlock.FACING, MCUtils.immersivePortalsPresent ? Direction.NORTH : Direction.SOUTH)
 							.with(InfinityDoorBlock.HALF, DoubleBlockHalf.LOWER));
 			otherWorld.setBlockState(otherPos.up(),
 					DOFBlocks.INFINITY_DOOR.getDefaultState()
 							.with(InfinityDoorBlock.HINGE, state.get(InfinityDoorBlock.HINGE))
-							.with(InfinityDoorBlock.FACING, Direction.NORTH)
+							.with(InfinityDoorBlock.FACING, MCUtils.immersivePortalsPresent ? Direction.NORTH : Direction.SOUTH)
 							.with(InfinityDoorBlock.HALF, DoubleBlockHalf.UPPER));
-		}
+
 		InfinityDoorBlockEntity dimInfinityDoor = (InfinityDoorBlockEntity) otherWorld.getBlockEntity(otherPos);
 		syncWith(dimInfinityDoor);
 	}
@@ -183,4 +183,25 @@ public class InfinityDoorBlockEntity extends BlockEntity
 		return super.toTag(tag);
 	}
 
+	@Override
+	public void tick()
+	{
+		if(!world.isClient && !MCUtils.immersivePortalsPresent && getCachedState().get(InfinityDoorBlock.HALF) == DoubleBlockHalf.LOWER)
+		{
+			world.getEntities(null, BoxUtils.getBoxInclusive(pos, pos.up())).forEach(entity ->
+			{
+				FabricDimensions.teleport(entity, syncDoorWorld.getDimension().getType(), (entity1, serverWorld, direction, v, v1) -> {
+					if(link != null)
+						return new BlockPattern.TeleportTarget(link.getPlayerPosCentered().add(0, 0, -1), Vec3d.ZERO, 180);
+					else
+					{
+						Direction facing = getSyncEntity().getCachedState().get(InfinityDoorBlock.FACING);
+						BlockPos pos = syncDoorPos.add(facing.getOpposite().getVector());
+						return new BlockPattern.TeleportTarget(new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5), Vec3d.ZERO, 180);
+					}
+				});
+			});
+
+		}
+	}
 }

@@ -19,8 +19,8 @@ public class PortalCreationHelper
 		
 		portal.width = width;
 		portal.height = height;
-		portal.axisH = new Vec3d(Direction.UP.getVector());
-		portal.axisW = new Vec3d(axisW.getVector());
+		portal.axisH = new Vec3d(Direction.UP.getUnitVector());
+		portal.axisW = new Vec3d(axisW.getUnitVector());
 		portal.dimensionTo = dimensionTo;
 		portal.destination = dest;
 		portal.teleportable = teleportable;

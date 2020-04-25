@@ -14,10 +14,9 @@ public class MCUtils
 	{
 		return mcServerReference.get();
 	}
-	
-	public static boolean isIPPresent()
-	{
-		return FabricLoader.getInstance().isModLoaded("immersive_portals");
-	}
+
+
+	public static boolean immersivePortalsPresent = false;
+
 	
 }

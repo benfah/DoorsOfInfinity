@@ -6,6 +6,7 @@ import me.benfah.doorsofinfinity.dimension.InfinityDimHelper;
 import me.benfah.doorsofinfinity.dimension.InfinityDimHelper.PersonalDimension;
 import me.benfah.doorsofinfinity.init.DOFBlocks;
 import me.benfah.doorsofinfinity.init.DOFDimensions;
+import me.benfah.doorsofinfinity.utils.MCUtils;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
@@ -131,7 +132,7 @@ public class InfinityDoorBlock extends BlockWithEntity
             }
             world.setBlockState(otherPos, Blocks.AIR.getDefaultState(), 35);
         }
-        if(!world.isClient)
+        if(!world.isClient && MCUtils.immersivePortalsPresent)
         {
             lowerBlockEntity.deleteLocalPortal();
         }
