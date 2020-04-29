@@ -1,0 +1,19 @@
+{
+  "parent": "block/cube",
+  "display": {
+    "firstperson_righthand": {
+      "rotation": [ 0, 135, 0 ],
+      "translation": [ 0, 0, 0 ],
+      "scale": [ 0.40, 0.40, 0.40 ]
+    }
+  },
+  "textures": {
+    "particle": "doorsofinfinity:block/wip_north",
+    "down": "doorsofinfinity:block/wip_south",
+    "up": "doorsofinfinity:block/wip_north",
+    "north": "doorsofinfinity:block/wip_front",
+    "east": "doorsofinfinity:block/wip_east",
+    "south": "doorsofinfinity:block/wip_behind",
+    "west": "doorsofinfinity:block/wip_west"
+  }
+}

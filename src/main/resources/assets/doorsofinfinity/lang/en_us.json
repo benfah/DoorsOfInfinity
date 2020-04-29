@@ -1,9 +1,16 @@
 {
 	"lore.doorsofinfinity.ancient_made": "Made by the ancients. Unbreakable",
 	"lore.doorsofinfinity.dim_offset": "Dimension ID: %s",
+	"lore.doorsofinfinity.ip_not_present": "Immersive Portals is required for this!",
+	"lore.doorsofinfinity.photo_link_size": "Width: %s, Height: %s",
+	"lore.doorsofinfinity.linked": "Linked!",
 	"block.doorsofinfinity.infinity_door": "Infinity Door",
+	"block.doorsofinfinity.photon_transmitter": "Photon Transmitter",
+	"item.doorsofinfinity.photon_link": "Photon Link",
+	"itemGroup.doorsofinfinity.items": "Doors of Infinity",
 	"block.doorsofinfinity.block_of_infinity": "Block of Infinity",
 	"block.doorsofinfinity.simulated_infinity_door": "Infinity Door",
 	"block.doorsofinfinity.simulated_block_of_infinity": "Block of Infinity",
-	"text.autoconfig.doorsofinfinity.option.requireDoorBorder": "Require Door Border"
+	"text.autoconfig.doorsofinfinity.option.requireDoorBorder": "Require Door Border",
+	"text.autoconfig.doorsofinfinity.option.dimensionSize": "Dimension Size"
 }

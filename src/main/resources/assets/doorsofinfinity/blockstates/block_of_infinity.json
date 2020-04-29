@@ -1,5 +1,6 @@
 {	
 	"variants": {
-	"": { "model": "doorsofinfinity:block/infinity_block" }
+		"color=black": { "model": "doorsofinfinity:block/infinity_block_black" },
+		"color=white": { "model": "doorsofinfinity:block/infinity_block_white" }
 	}
 }

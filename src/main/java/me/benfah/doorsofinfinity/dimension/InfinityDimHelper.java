@@ -2,6 +2,8 @@ package me.benfah.doorsofinfinity.dimension;
 
 import java.util.function.IntPredicate;
 
+import me.benfah.doorsofinfinity.block.InfinityBlock;
+import me.benfah.doorsofinfinity.config.DOFConfig;
 import me.benfah.doorsofinfinity.init.DOFBlocks;
 import me.benfah.doorsofinfinity.init.DOFDimensions;
 import me.benfah.doorsofinfinity.utils.MCUtils;
@@ -44,8 +46,8 @@ public class InfinityDimHelper
 	
 	public static class PersonalDimension
 	{
-		private static final int INNER_SIZE = 11;
-		private static final int WALL_THICKNESS = 2;
+		private static int INNER_SIZE = DOFConfig.getInstance().dimensionSize;
+		private static int WALL_THICKNESS = 2;
 
 		private int dimId;
 		private ServerWorld world;
@@ -90,7 +92,13 @@ public class InfinityDimHelper
 						BlockPos pos = new BlockPos(basePos.x + i, basePos.y + j, basePos.z + k);
 						IntPredicate allowed = (a) -> a <= WALL_THICKNESS - 1 || a >= INNER_SIZE + WALL_THICKNESS;
 						if(allowed.test(i) || allowed.test(j) || allowed.test(k))
-						world.setBlockState(pos, DOFBlocks.BLOCK_OF_INFINITY.getDefaultState());
+						{
+							if(j >= WALL_THICKNESS)
+								world.setBlockState(pos, DOFBlocks.BLOCK_OF_INFINITY.getDefaultState());
+							else
+								world.setBlockState(pos, DOFBlocks.BLOCK_OF_INFINITY.getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE));
+
+						}
 					}
 				}
 			}

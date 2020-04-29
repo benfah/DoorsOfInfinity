@@ -188,7 +188,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 	@Override
 	public void tick()
 	{
-		if(!world.isClient && !MCUtils.immersivePortalsPresent && getCachedState().get(InfinityDoorBlock.HALF) == DoubleBlockHalf.LOWER)
+		if(!world.isClient && !MCUtils.immersivePortalsPresent && getCachedState().get(InfinityDoorBlock.HALF) == DoubleBlockHalf.LOWER && syncDoorWorld != null)
 		{
 			world.getEntities(null, BoxUtils.getBoxInclusive(pos, pos.up())).forEach(entity ->
 			{
