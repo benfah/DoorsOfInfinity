@@ -1,0 +1,10 @@
+{	
+	"variants": {
+		"facing=up": { "model": "doorsofinfinity:block/photon_transmitter", "x": 270 },
+		"facing=down": { "model": "doorsofinfinity:block/photon_transmitter", "x": 90 },
+		"facing=north": { "model": "doorsofinfinity:block/photon_transmitter" },
+		"facing=east": { "model": "doorsofinfinity:block/photon_transmitter", "y":  90 },
+		"facing=south": { "model": "doorsofinfinity:block/photon_transmitter", "y":  180 },
+		"facing=west": { "model": "doorsofinfinity:block/photon_transmitter", "y":  270 }
+	}
+}
