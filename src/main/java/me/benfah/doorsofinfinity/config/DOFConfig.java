@@ -10,6 +10,8 @@ public class DOFConfig implements ConfigData
 {
     public boolean requireDoorBorder = true;
 
+    public int dimensionSize = 11;
+
     public static DOFConfig getInstance()
     {
         return AutoConfig.getConfigHolder(DOFConfig.class).getConfig();
