@@ -1,5 +1,6 @@
 package me.benfah.doorsofinfinity;
 
+import com.qouteall.immersive_portals.render.PortalEntityRenderer;
 import me.benfah.doorsofinfinity.block.entity.renderer.InfinityDoorBlockEntityRenderer;
 import me.benfah.doorsofinfinity.init.DOFBlockEntities;
 import me.benfah.doorsofinfinity.init.DOFBlocks;
@@ -8,7 +9,9 @@ import me.benfah.doorsofinfinity.utils.MCUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
 import net.minecraft.client.render.RenderLayer;
+
 
 public class DOFModClient implements ClientModInitializer
 {
@@ -26,7 +29,7 @@ public class DOFModClient implements ClientModInitializer
 		}
 		else
 		{
-			DOFEntities.initClient();
+			EntityRendererRegistry.INSTANCE.register(DOFEntities.BREAKABLE_PORTAL, (entityRenderDispatcher, context) -> new PortalEntityRenderer(entityRenderDispatcher));
 		}
 	}
 

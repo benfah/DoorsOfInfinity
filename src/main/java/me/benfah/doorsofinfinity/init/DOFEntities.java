@@ -24,9 +24,5 @@ public class DOFEntities
                 BreakablePortal::new).size(EntityDimensions.fixed(1, 1)).setImmuneToFire().build());
     }
 
-    public static void initClient()
-    {
-            EntityRendererRegistry.INSTANCE.register(BREAKABLE_PORTAL, (entityRenderDispatcher, context) -> new PortalEntityRenderer(entityRenderDispatcher));
-    }
 
 }
