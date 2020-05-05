@@ -2,6 +2,7 @@ package me.benfah.doorsofinfinity.init;
 
 import com.qouteall.immersive_portals.McHelper;
 import me.benfah.doorsofinfinity.DOFMod;
+import me.benfah.doorsofinfinity.item.DimensionalShardItem;
 import me.benfah.doorsofinfinity.item.InfinityDoorItem;
 import me.benfah.doorsofinfinity.item.LoreBlockItem;
 import me.benfah.doorsofinfinity.item.PhotonLinkItem;
@@ -35,6 +36,7 @@ public class DOFItems
 	public static Item PHOTON_TRANSMITTER;
 	public static Item PHOTON_LINK;
 
+	public static Item DIMENSIONAL_SHARD;
 
 	public static final ItemGroup DOF_GROUP = FabricItemGroupBuilder.build(new Identifier(DOFMod.MOD_ID, "items"), () -> new ItemStack(INFINITY_DOOR));
 
@@ -51,6 +53,8 @@ public class DOFItems
 						stack -> !MCUtils.immersivePortalsPresent ? new TranslatableText("lore.doorsofinfinity.ip_not_present").formatted(Formatting.GRAY) : null));
 
 		PHOTON_LINK = registerItem("photon_link", new PhotonLinkItem(new Settings().group(DOF_GROUP).maxCount(1)));
+
+		DIMENSIONAL_SHARD = registerItem("dimensional_shard", new DimensionalShardItem(new Settings().group(DOF_GROUP).maxCount(16)));
 	}
 
 	public static <T extends Item> T registerItem(String name, T item)

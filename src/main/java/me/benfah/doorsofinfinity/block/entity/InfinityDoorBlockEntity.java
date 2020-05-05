@@ -67,7 +67,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 
 	}
 
-	public boolean syncPresent()
+	public boolean isSyncPresent()
 	{
 		return syncDoorPos != null && syncDoorWorld != null && !syncDoorWorld.getBlockState(syncDoorPos).isAir();
 	}
@@ -155,9 +155,6 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 	@Override
 	public void fromTag(CompoundTag tag)
 	{
-		if (tag.contains("DimOffset"))
-			link = InfinityDimHelper.getPersonalDimension(tag.getInt("DimOffset"));
-
 		if (tag.contains("SyncDoorDimId"))
 		{
 			syncDoorWorld = MCUtils.getServer().getWorld(DimensionType.byRawId(tag.getInt("SyncDoorDimId")));

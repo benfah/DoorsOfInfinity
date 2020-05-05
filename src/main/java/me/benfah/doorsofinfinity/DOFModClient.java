@@ -23,11 +23,10 @@ public class DOFModClient implements ClientModInitializer
 		BlockRenderLayerMap.INSTANCE.putBlock(DOFBlocks.SIMULATED_INFINITY_DOOR, RenderLayer.getCutout());
 //		BlockRenderLayerMap.INSTANCE.putBlock(DOFBlocks.PHOTON_TRANSMITTER, RenderLayer.getCutout());
 
-		if(!MCUtils.immersivePortalsPresent)
-		{
-			BlockEntityRendererRegistry.INSTANCE.register(DOFBlockEntities.INFINITY_DOOR, InfinityDoorBlockEntityRenderer::new);
-		}
-		else
+		BlockEntityRendererRegistry.INSTANCE.register(DOFBlockEntities.INFINITY_DOOR, InfinityDoorBlockEntityRenderer::new);
+
+
+		if(MCUtils.immersivePortalsPresent)
 		{
 			EntityRendererRegistry.INSTANCE.register(DOFEntities.BREAKABLE_PORTAL, (entityRenderDispatcher, context) -> new PortalEntityRenderer(entityRenderDispatcher));
 		}
