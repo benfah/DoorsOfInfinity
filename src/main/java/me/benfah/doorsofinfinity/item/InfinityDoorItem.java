@@ -30,7 +30,9 @@ public class InfinityDoorItem extends TallBlockItem
         if(blockEntityTag != null && !blockEntityTag.isEmpty())
         {
             int dimOffset = blockEntityTag.getInt("DimOffset");
+            int upgrades = blockEntityTag.getInt("Upgrades");
             tooltip.add(new TranslatableText("lore.doorsofinfinity.dim_offset", dimOffset).formatted(Formatting.GRAY));
+            tooltip.add(new TranslatableText("text.doorsofinfinity.installed_upgrades", upgrades).formatted(Formatting.GRAY));
         }
         super.appendTooltip(stack, world, tooltip, context);
     }

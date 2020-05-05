@@ -12,6 +12,7 @@ import me.benfah.doorsofinfinity.init.DOFDimensions;
 import me.benfah.doorsofinfinity.utils.BoxUtils;
 import me.benfah.doorsofinfinity.utils.MCUtils;
 import me.benfah.doorsofinfinity.utils.PortalCreationHelper;
+import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -23,9 +24,12 @@ import net.minecraft.util.Tickable;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import org.lwjgl.system.CallbackI;
 
-public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
+public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, BlockEntityClientSerializable
 {
+
+	public static final int MAX_UPGRADES = 4;
 
 	public PersonalDimension link;
 
@@ -33,6 +37,8 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 	public World syncDoorWorld;
 
 	public Portal localPortal;
+
+	public int installedUpgrades = 0;
 
 	public InfinityDoorBlockEntity()
 	{
@@ -45,11 +51,19 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 		entity.syncDoorWorld = this.world;
 		this.syncDoorPos = entity.pos;
 		this.syncDoorWorld = entity.world;
+
+		int upgrades = Math.max(entity.installedUpgrades, this.installedUpgrades);
+
+		this.installedUpgrades = upgrades;
+		entity.installedUpgrades = upgrades;
+
+		this.sync();
+		entity.sync();
 	}
 
 	public void updateSyncDoor()
 	{
-		if (syncPresent())
+		if (isSyncPresent())
 		{
 			syncDoorWorld.setBlockState(syncDoorPos,
 					getSyncEntity().getWorld().getBlockState(getSyncEntity().getPos())
@@ -67,7 +81,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 
 	}
 
-	public boolean syncPresent()
+	public boolean isSyncPresent()
 	{
 		return syncDoorPos != null && syncDoorWorld != null && !syncDoorWorld.getBlockState(syncDoorPos).isAir();
 	}
@@ -86,14 +100,11 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 	{
 		world.getEntities(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).forEach((portal) ->
 		{
-//			PortalManipulation.removeConnectedPortals(portal, (t) ->
-//			{
-//			});
 			portal.remove();
 		});
 	}
 
-	public void createSyncedPortals()
+	private void createSyncedPortals()
 	{
 		Direction direction = getCachedState().get(InfinityDoorBlock.FACING);
 		Direction rightDirection = Direction.fromHorizontal(direction.getHorizontal() + 1);
@@ -125,11 +136,33 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 							.with(InfinityDoorBlock.FACING, MCUtils.immersivePortalsPresent ? Direction.NORTH : Direction.SOUTH)
 							.with(InfinityDoorBlock.HALF, DoubleBlockHalf.UPPER));
 
-		InfinityDoorBlockEntity dimInfinityDoor = (InfinityDoorBlockEntity) otherWorld.getBlockEntity(otherPos);
-		syncWith(dimInfinityDoor);
+
+
+		syncWith((InfinityDoorBlockEntity) otherWorld.getBlockEntity(otherPos));
+		createSyncedPortals();
 	}
 
+	@Override
+	public void fromClientTag(CompoundTag compoundTag)
+	{
+		installedUpgrades = compoundTag.getInt("Upgrades");
+	}
+
+	@Override
+	public CompoundTag toClientTag(CompoundTag compoundTag)
+	{
+		compoundTag.putInt("Upgrades", installedUpgrades);
+		return compoundTag;
+	}
+
+	@Override
 	public void sync()
+	{
+		markDirty();
+		BlockEntityClientSerializable.super.sync();
+	}
+
+	public void syncWithDoor()
 	{
 		syncWith(getSyncEntity());
 	}
@@ -157,14 +190,21 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 	@Override
 	public void fromTag(BlockState state, CompoundTag tag)
 	{
-		if (tag.contains("DimOffset"))
-			link = InfinityDimHelper.getPersonalDimension(tag.getInt("DimOffset"));
+
 
 		if (tag.contains("SyncDoorDimId"))
 		{
 			syncDoorWorld = MCUtils.getServer().getWorld(DimensionType.byRawId(tag.getInt("SyncDoorDimId")));
 			syncDoorPos = new BlockPos(tag.getInt("SyncDoorX"), tag.getInt("SyncDoorY"), tag.getInt("SyncDoorZ"));
 		}
+
+		if(tag.contains("Upgrades"))
+		{
+			installedUpgrades = tag.getInt("Upgrades");
+		}
+
+		if (tag.contains("DimOffset"))
+			link = InfinityDimHelper.getPersonalDimension(tag.getInt("DimOffset"), installedUpgrades);
 
 		super.fromTag(state, tag);
 	}
@@ -182,6 +222,9 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 			tag.putInt("SyncDoorY", syncDoorPos.getY());
 			tag.putInt("SyncDoorZ", syncDoorPos.getZ());
 		}
+
+		tag.putInt("Upgrades", installedUpgrades);
+
 		return super.toTag(tag);
 	}
 

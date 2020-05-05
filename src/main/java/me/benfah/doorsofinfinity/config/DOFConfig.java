@@ -11,6 +11,7 @@ public class DOFConfig implements ConfigData
     public boolean requireDoorBorder = true;
 
     public int dimensionSize = 11;
+    public int maxUpgrades = 8;
 
     public static DOFConfig getInstance()
     {

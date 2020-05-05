@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -206,9 +207,7 @@ public class InfinityDoorBlock extends BlockWithEntity
 
             PersonalDimension personalDim = blockEntity.getOrCreateLinkedDimension();
 
-
             blockEntity.placeSyncedDoor(InfinityDimHelper.getInfinityDimension(), personalDim.getPlayerPos());
-            blockEntity.createSyncedPortals();
         }
     }
 
@@ -265,15 +264,14 @@ public class InfinityDoorBlock extends BlockWithEntity
 
         state = (BlockState) state.cycle(OPEN);
         world.setBlockState(pos, state, 10);
-        world.playLevelEvent(player,
-                (Boolean) state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+        world.playLevelEvent(player, (Boolean) state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
 
         if(!world.isClient)
         {
+
             BlockPos lowerPos = state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
 
             InfinityDoorBlockEntity blockEntity = (InfinityDoorBlockEntity) world.getBlockEntity(lowerPos);
-
             blockEntity.updateSyncDoor();
         }
         return ActionResult.SUCCESS;
