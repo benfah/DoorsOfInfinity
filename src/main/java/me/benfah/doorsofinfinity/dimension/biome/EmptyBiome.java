@@ -13,4 +13,6 @@ public class EmptyBiome extends Biome
 				.temperature(0.5F).downfall(0.0F).waterColor(4159204).waterFogColor(329011).parent((String) null));
 	}
 
+
+
 }

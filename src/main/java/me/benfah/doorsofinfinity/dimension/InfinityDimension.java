@@ -2,9 +2,12 @@ package me.benfah.doorsofinfinity.dimension;
 
 import me.benfah.doorsofinfinity.dimension.chunkgen.EmptyChunkGeneratorConfig;
 import me.benfah.doorsofinfinity.init.DOFDimensions;
+import me.benfah.doorsofinfinity.utils.MCUtils;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeSourceType;
 import net.minecraft.world.biome.source.FixedBiomeSourceConfig;
@@ -20,6 +23,7 @@ public class InfinityDimension extends Dimension
 	public InfinityDimension(World world, DimensionType type)
 	{
 		super(world, type, 0.5F);
+		world.getGameRules().get(GameRules.DO_MOB_SPAWNING).set(false, MCUtils.getServer());
 	}
 	
 	@Override
@@ -72,8 +76,6 @@ public class InfinityDimension extends Dimension
 	{
 		return false;
 	}
-	
-	
 	
 	@Override
 	public DimensionType getType()
