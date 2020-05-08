@@ -49,7 +49,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 
 	public void updateSyncDoor()
 	{
-		if (syncPresent())
+		if (isSyncPresent())
 		{
 			syncDoorWorld.setBlockState(syncDoorPos,
 					getSyncEntity().getWorld().getBlockState(getSyncEntity().getPos())
