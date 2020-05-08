@@ -35,6 +35,11 @@
                   "source": "SyncDoorZ",
                   "target": "BlockEntityTag.SyncDoorZ",
                   "op": "replace"
+                },
+                {
+                  "source": "Upgrades",
+                  "target": "BlockEntityTag.Upgrades",
+                  "op": "replace"
                 }
               ]
             }
