@@ -1,46 +1,49 @@
 package me.benfah.doorsofinfinity.init;
 
 import me.benfah.doorsofinfinity.DOFMod;
-import me.benfah.doorsofinfinity.compat.CompatChunkGeneratorType;
-import me.benfah.doorsofinfinity.dimension.InfinityDimension;
+
+import me.benfah.doorsofinfinity.dimension.InfinityModDimension;
 import me.benfah.doorsofinfinity.dimension.biome.EmptyBiome;
 import me.benfah.doorsofinfinity.dimension.chunkgen.EmptyChunkGenerator;
 import me.benfah.doorsofinfinity.dimension.chunkgen.EmptyChunkGeneratorConfig;
-import net.fabricmc.fabric.api.dimension.v1.EntityPlacer;
-import net.fabricmc.fabric.api.dimension.v1.FabricDimensionType;
-import net.minecraft.block.pattern.BlockPattern.TeleportTarget;
-import net.minecraft.entity.Entity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.gen.chunk.ChunkGeneratorType;
+
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.gen.ChunkGeneratorType;
+import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.ModDimension;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class DOFDimensions
 {
-    public static final FabricDimensionType INFINITY_DIM = FabricDimensionType.builder()
-    		.defaultPlacer(new EntityPlacer()
-			{
-				
-				@Override
-				public TeleportTarget placeEntity(Entity teleported, ServerWorld destination, Direction portalDir,
-						double horizontalOffset, double verticalOffset)
-				{
-					return new TeleportTarget(new Vec3d(0, 0, 0), new Vec3d(0, 100, 0), 0);
-				}
-			})
-            .factory(InfinityDimension::new)
-            .skyLight(false)
-            .buildAndRegister(new Identifier(DOFMod.MOD_ID, "infinity_dimension"));
+
+	public static final DeferredRegister<ChunkGeneratorType<?, ?>> CHUNK_GENERATOR_TYPE = new DeferredRegister<>(ForgeRegistries.CHUNK_GENERATOR_TYPES, DOFMod.MOD_ID);
+	public static final DeferredRegister<Biome> BIOMES = new DeferredRegister<>(ForgeRegistries.BIOMES, DOFMod.MOD_ID);
+	public static final DeferredRegister<ModDimension> DIMENSIONS = new DeferredRegister<>(ForgeRegistries.MOD_DIMENSIONS, DOFMod.MOD_ID);
+
+	public static DimensionType INFINITY_DIM;
+
+	public static final RegistryObject<ChunkGeneratorType<EmptyChunkGeneratorConfig, EmptyChunkGenerator>> EMPTY_CHUNK_GEN = CHUNK_GENERATOR_TYPE.register("empty", () -> new ChunkGeneratorType<>(EmptyChunkGenerator::new, false, EmptyChunkGeneratorConfig::new));
+
+	public static final RegistryObject<ModDimension> INFINITY_MOD_DIM = DIMENSIONS.register("infinity_dimension", () -> new InfinityModDimension());
+
+	public static final RegistryObject<Biome> EMPTY_BIOME = BIOMES.register("empty", EmptyBiome::new);
     
-	public static ChunkGeneratorType<EmptyChunkGeneratorConfig, EmptyChunkGenerator> EMPTY_CHUNK_GEN = new CompatChunkGeneratorType<>(EmptyChunkGenerator::new, false, EmptyChunkGeneratorConfig::new);
-	
-	public static EmptyBiome EMPTY_BIOME = new EmptyBiome();
-    
-    public static void init()
-    {
-    	Registry.register(Registry.BIOME, new Identifier(DOFMod.MOD_ID, "empty_biome"), EMPTY_BIOME);
-    	Registry.register(Registry.CHUNK_GENERATOR_TYPE, new Identifier(DOFMod.MOD_ID, "empty"), EMPTY_CHUNK_GEN);
-    }
+    public static List<DeferredRegister<?>> getRegisters()
+	{
+		return Arrays.asList(BIOMES, CHUNK_GENERATOR_TYPE, DIMENSIONS);
+	}
+
+	public static void registerDimension()
+	{
+		ResourceLocation resourceLocation = new ResourceLocation(DOFMod.MOD_ID, "infinity_dimension");
+		INFINITY_DIM = DimensionManager.registerOrGetDimension(resourceLocation, INFINITY_MOD_DIM.get(), null, false);
+
+	}
 }

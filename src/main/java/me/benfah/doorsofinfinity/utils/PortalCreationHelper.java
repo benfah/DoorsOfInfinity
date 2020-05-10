@@ -6,8 +6,8 @@ import com.qouteall.immersive_portals.portal.PortalManipulation;
 
 import me.benfah.doorsofinfinity.entity.BreakablePortal;
 import me.benfah.doorsofinfinity.init.DOFEntities;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Quaternion;
+import net.minecraft.client.renderer.Quaternion;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
@@ -17,7 +17,7 @@ public class PortalCreationHelper
 {
 
 	public static Portal spawn(World world, Vec3d pos, double width, double height, Vec3i axisW, Vec3i axisH,
-			DimensionType dimensionTo, Vec3d dest, boolean teleportable, Quaternion rot, boolean biWay)
+							   DimensionType dimensionTo, Vec3d dest, boolean teleportable, Quaternion rot, boolean biWay)
 	{
 		Portal portal = new Portal(Portal.entityType, world);
 		
@@ -34,8 +34,8 @@ public class PortalCreationHelper
 		portal.cullableYStart = 0;
 		if(rot != null)
 		portal.rotation = rot;
-		portal.setPos(pos.getX(), pos.getY(), pos.getZ());
-		world.spawnEntity(portal);
+		portal.setPosition(pos.getX(), pos.getY(), pos.getZ());
+		world.addEntity(portal);
 		if(biWay)
 		PortalManipulation.completeBiWayPortal(portal, Portal.entityType);
 		return portal;
@@ -46,7 +46,7 @@ public class PortalCreationHelper
 												 boolean teleportable, Quaternion rot, boolean biWay,
 												 IntBox transmitterBox, IntBox glassBox, World transmitterWorld)
 	{
-		BreakablePortal portal = new BreakablePortal(world);
+		BreakablePortal portal = new BreakablePortal(DOFEntities.BREAKABLE_PORTAL.get(), world);
 
 		portal.width = width;
 		portal.height = height;
@@ -67,8 +67,8 @@ public class PortalCreationHelper
 
 		if(rot != null)
 			portal.rotation = rot;
-		portal.setPos(pos.getX(), pos.getY(), pos.getZ());
-		world.spawnEntity(portal);
+		portal.setPosition(pos.getX(), pos.getY(), pos.getZ());
+		world.addEntity(portal);
 		if(biWay)
 			PortalManipulation.completeBiWayPortal(portal, Portal.entityType);
 		return portal;
@@ -77,13 +77,13 @@ public class PortalCreationHelper
 	public static Portal spawn(World world, Vec3d pos, double width, double height, Direction axisW,
 							   DimensionType dimensionTo, Vec3d dest, boolean teleportable, Quaternion rot, boolean biWay)
 	{
-		return spawn(world, pos, width, height, axisW.getVector(), Direction.UP.getVector(), dimensionTo, dest, teleportable, rot, biWay);
+		return spawn(world, pos, width, height, axisW.getDirectionVec(), Direction.UP.getDirectionVec(), dimensionTo, dest, teleportable, rot, biWay);
 	}
 
 	public static Portal spawn(World world, Vec3d pos, double width, double height, Direction axisW,
 							   DimensionType dimensionTo, Vec3d dest, boolean teleportable, Quaternion rot)
 	{
-		return spawn(world, pos, width, height, axisW.getVector(), Direction.UP.getVector(), dimensionTo, dest, teleportable, rot, true);
+		return spawn(world, pos, width, height, axisW.getDirectionVec(), Direction.UP.getDirectionVec(), dimensionTo, dest, teleportable, rot, true);
 	}
 
 }

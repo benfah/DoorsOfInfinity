@@ -1,39 +1,38 @@
 package me.benfah.doorsofinfinity.item;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.Item;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.TallBlockItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Formatting;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class InfinityDoorItem extends TallBlockItem
 {
 
-    public InfinityDoorItem(Block block, Settings settings)
+    public InfinityDoorItem(Block block, Properties settings)
     {
         super(block, settings);
     }
 
+
+
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context)
+    public void addInformation(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag context)
     {
-        CompoundTag blockEntityTag = stack.getSubTag("BlockEntityTag");
+        CompoundNBT blockEntityTag = stack.getChildTag("BlockEntityTag");
         if(blockEntityTag != null && !blockEntityTag.isEmpty())
         {
             int dimOffset = blockEntityTag.getInt("DimOffset");
             int upgrades = blockEntityTag.getInt("Upgrades");
-            tooltip.add(new TranslatableText("lore.doorsofinfinity.dim_offset", dimOffset).formatted(Formatting.GRAY));
-            tooltip.add(new TranslatableText("text.doorsofinfinity.installed_upgrades", upgrades).formatted(Formatting.GRAY));
+            tooltip.add(new TranslationTextComponent("lore.doorsofinfinity.dim_offset", dimOffset).applyTextStyle(TextFormatting.GRAY));
+            tooltip.add(new TranslationTextComponent("text.doorsofinfinity.installed_upgrades", upgrades).applyTextStyle(TextFormatting.GRAY));
         }
-        super.appendTooltip(stack, world, tooltip, context);
+        super.addInformation(stack, world, tooltip, context);
     }
 }

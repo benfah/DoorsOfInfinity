@@ -7,82 +7,73 @@ import me.benfah.doorsofinfinity.dimension.InfinityDimHelper.PersonalDimension;
 import me.benfah.doorsofinfinity.init.DOFBlocks;
 import me.benfah.doorsofinfinity.init.DOFDimensions;
 import me.benfah.doorsofinfinity.utils.MCUtils;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.*;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.DoorHinge;
-import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.entity.EntityContext;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.material.PushReaction;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.EnumProperty;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.BlockMirror;
-import net.minecraft.util.BlockRotation;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.pathfinding.PathType;
+import net.minecraft.state.*;
+import net.minecraft.state.properties.BlockStateProperties;
+import net.minecraft.state.properties.DoorHingeSide;
+import net.minecraft.state.properties.DoubleBlockHalf;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.shapes.VoxelShape;
+import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.IWorldReader;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldView;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.DimensionManager;
 
+import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
-public class InfinityDoorBlock extends BlockWithEntity
+public class InfinityDoorBlock extends ContainerBlock
 {
 
     public static final DirectionProperty FACING;
     public static final BooleanProperty OPEN;
-    public static final EnumProperty<DoorHinge> HINGE;
+    public static final EnumProperty<DoorHingeSide> HINGE;
     public static final EnumProperty<DoubleBlockHalf> HALF;
-    protected static final VoxelShape NORTH_SHAPE;
     protected static final VoxelShape SOUTH_SHAPE;
-    protected static final VoxelShape EAST_SHAPE;
+    protected static final VoxelShape NORTH_SHAPE;
     protected static final VoxelShape WEST_SHAPE;
+    protected static final VoxelShape EAST_SHAPE;
 
-    public InfinityDoorBlock(Block.Settings settings)
+    public InfinityDoorBlock(Block.Properties settings)
     {
         super(settings);
-        this.setDefaultState(
-                (BlockState) ((BlockState) ((BlockState) ((BlockState) ((BlockState) ((BlockState) this.stateManager
-                        .getDefaultState()).with(FACING, Direction.NORTH)).with(OPEN, false)).with(HINGE,
-                        DoorHinge.LEFT)).with(HALF, DoubleBlockHalf.LOWER)));
+        this.setDefaultState((((((this.getDefaultState()).with(FACING, Direction.NORTH)).with(OPEN, false)).with(HINGE, DoorHingeSide.LEFT)).with(HALF, DoubleBlockHalf.LOWER)));
     }
 
-    public VoxelShape getOutlineShape(BlockState state, BlockView view, BlockPos pos, EntityContext context)
-    {
-        Direction direction = (Direction) state.get(FACING);
-        boolean bl = !(Boolean) state.get(OPEN);
-        boolean bl2 = state.get(HINGE) == DoorHinge.RIGHT;
-        switch(direction)
-        {
+    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+        Direction direction = state.get(FACING);
+        boolean flag = !state.get(OPEN);
+        boolean flag1 = state.get(HINGE) == DoorHingeSide.RIGHT;
+        switch(direction) {
             case EAST:
             default:
-                return bl ? WEST_SHAPE : (bl2 ? SOUTH_SHAPE : NORTH_SHAPE);
+                return flag ? EAST_SHAPE : (flag1 ? NORTH_SHAPE : SOUTH_SHAPE);
             case SOUTH:
-                return bl ? NORTH_SHAPE : (bl2 ? WEST_SHAPE : EAST_SHAPE);
+                return flag ? SOUTH_SHAPE : (flag1 ? EAST_SHAPE : WEST_SHAPE);
             case WEST:
-                return bl ? EAST_SHAPE : (bl2 ? NORTH_SHAPE : SOUTH_SHAPE);
+                return flag ? WEST_SHAPE : (flag1 ? SOUTH_SHAPE : NORTH_SHAPE);
             case NORTH:
-                return bl ? SOUTH_SHAPE : (bl2 ? EAST_SHAPE : WEST_SHAPE);
+                return flag ? NORTH_SHAPE : (flag1 ? WEST_SHAPE : EAST_SHAPE);
         }
     }
 
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState,
+    public BlockState updatePostPlacement(BlockState state, Direction facing, BlockState neighborState,
                                                 IWorld world, BlockPos pos, BlockPos neighborPos)
     {
         DoubleBlockHalf doubleBlockHalf = (DoubleBlockHalf) state.get(HALF);
@@ -97,51 +88,53 @@ public class InfinityDoorBlock extends BlockWithEntity
         }
         else
         {
-            return doubleBlockHalf == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !state.canPlaceAt(world, pos)
+            return doubleBlockHalf == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !state.isValidPosition(world, pos)
                     ? Blocks.AIR.getDefaultState()
-                    : super.getStateForNeighborUpdate(state, facing, neighborState, world, pos, neighborPos);
+                    : super.updatePostPlacement(state, facing, neighborState, world, pos, neighborPos);
         }
     }
 
-    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, BlockEntity blockEntity,
+    public void harvestBlock(World world, PlayerEntity player, BlockPos pos, BlockState state, TileEntity blockEntity,
                            ItemStack stack)
     {
-        super.afterBreak(world, player, pos, Blocks.AIR.getDefaultState(), blockEntity, stack);
+        super.harvestBlock(world, player, pos, Blocks.AIR.getDefaultState(), blockEntity, stack);
 
     }
 
 
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player)
+    public void onBlockHarvested(World world, BlockPos pos, BlockState state, PlayerEntity player)
     {
         BlockPos lowerPos = state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
         BlockState lowerBlockState = world.getBlockState(lowerPos);
-        InfinityDoorBlockEntity firstEntity = (InfinityDoorBlockEntity) world.getBlockEntity(lowerPos);
+        InfinityDoorBlockEntity firstEntity = (InfinityDoorBlockEntity) world.getTileEntity(lowerPos);
 
 
         DoubleBlockHalf doubleBlockHalf = (DoubleBlockHalf) state.get(HALF);
         BlockPos otherPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
         BlockState otherblockState = world.getBlockState(otherPos);
-        InfinityDoorBlockEntity lowerBlockEntity = (InfinityDoorBlockEntity) world.getBlockEntity(lowerPos);
+        InfinityDoorBlockEntity lowerBlockEntity = (InfinityDoorBlockEntity) world.getTileEntity(lowerPos);
 
         if(otherblockState.getBlock() == this && otherblockState.get(HALF) != doubleBlockHalf)
         {
-            world.playLevelEvent(player, 2001, otherPos, Block.getRawIdFromState(otherblockState));
-            if(!world.isClient && !player.isCreative() && player.isUsingEffectiveTool(otherblockState))
+            world.playEvent(player, 2001, otherPos, Block.getStateId(otherblockState));
+            if(!world.isRemote && !player.isCreative() && player.canHarvestBlock(otherblockState))
             {
 
-                Block.dropStacks(lowerBlockState, world, lowerPos, world.getBlockEntity(lowerPos));
+                Block.spawnDrops(lowerBlockState, world, lowerPos, world.getTileEntity(lowerPos));
             }
             world.setBlockState(otherPos, Blocks.AIR.getDefaultState(), 35);
         }
-        if(!world.isClient && MCUtils.immersivePortalsPresent)
+        if(!world.isRemote && MCUtils.immersivePortalsPresent)
         {
             lowerBlockEntity.deleteLocalPortal();
         }
-        super.onBreak(world, pos, state, player);
+        super.onBlockHarvested(world, pos, state, player);
     }
 
+
+
     @Override
-    public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos)
+    public float getPlayerRelativeBlockHardness(BlockState state, PlayerEntity player, IBlockReader world, BlockPos pos)
     {
         if(world instanceof World)
         {
@@ -150,134 +143,122 @@ public class InfinityDoorBlock extends BlockWithEntity
                 return 0;
             }
         }
-        return super.calcBlockBreakingDelta(state, player, world, pos);
+        return super.getPlayerRelativeBlockHardness(state, player, world, pos);
     }
 
-    public boolean canPlaceAtSide(BlockState world, BlockView view, BlockPos pos, BlockPlacementEnvironment env)
-    {
-        switch(env)
-        {
+    public boolean allowsMovement(BlockState state, IBlockReader worldIn, BlockPos pos, PathType type) {
+        switch(type) {
             case LAND:
-                return (Boolean) world.get(OPEN);
+                return state.get(OPEN);
             case WATER:
                 return false;
             case AIR:
-                return (Boolean) world.get(OPEN);
+                return state.get(OPEN);
             default:
                 return false;
         }
     }
 
-    private int getOpenSoundEventId()
-    {
-        return this.material == Material.METAL ? 1011 : 1012;
+    private int getCloseSound() {
+        return this.material == Material.IRON ? 1011 : 1012;
     }
 
-    private int getCloseSoundEventId()
-    {
-        return this.material == Material.METAL ? 1005 : 1006;
+    private int getOpenSound() {
+        return this.material == Material.IRON ? 1005 : 1006;
     }
 
-    public BlockState getPlacementState(ItemPlacementContext ctx)
-    {
-        BlockPos blockPos = ctx.getBlockPos();
-        if(blockPos.getY() < 255 && ctx.getWorld().getBlockState(blockPos.up()).canReplace(ctx))
-        {
-            World world = ctx.getWorld();
-            boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
-            return (BlockState) ((BlockState) ((BlockState) ((BlockState) ((BlockState) this.getDefaultState()
-                    .with(FACING, ctx.getPlayerFacing())).with(HINGE, this.getHinge(ctx)))).with(OPEN, bl)).with(HALF,
-                    DoubleBlockHalf.LOWER);
-        }
-        else
-        {
+    @Nullable
+    public BlockState getStateForPlacement(BlockItemUseContext context) {
+        BlockPos blockpos = context.getPos();
+        if (blockpos.getY() < 255 && context.getWorld().getBlockState(blockpos.up()).isReplaceable(context)) {
+            World world = context.getWorld();
+            boolean flag = world.isBlockPowered(blockpos) || world.isBlockPowered(blockpos.up());
+            return this.getDefaultState().with(FACING, context.getPlacementHorizontalFacing()).with(HINGE, this.getHinge(context)).with(OPEN, Boolean.valueOf(flag)).with(HALF, DoubleBlockHalf.LOWER);
+        } else {
             return null;
         }
     }
 
-    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack)
-    {
-        world.setBlockState(pos.up(), (BlockState) state.with(HALF, DoubleBlockHalf.UPPER), 3);
-
-        if(state.get(HALF) == DoubleBlockHalf.LOWER && !world.isClient)
+    public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
+        worldIn.setBlockState(pos.up(), state.with(HALF, DoubleBlockHalf.UPPER), 3);
+        if(state.get(HALF) == DoubleBlockHalf.LOWER && !worldIn.isRemote)
         {
-            if(itemStack != null && itemStack.getSubTag("BlockEntity") != null)
+            if(stack != null && stack.getChildTag("BlockEntity") != null)
             {
                 InfinityDoorBlockEntity blockEntity = new InfinityDoorBlockEntity();
                 blockEntity.updateSyncDoor();
             }
-            InfinityDoorBlockEntity blockEntity = (InfinityDoorBlockEntity) world.getBlockEntity(pos);
+            InfinityDoorBlockEntity blockEntity = (InfinityDoorBlockEntity) worldIn.getTileEntity(pos);
 
             PersonalDimension personalDim = blockEntity.getOrCreateLinkedDimension();
 
-            blockEntity.placeSyncedDoor(InfinityDimHelper.getInfinityDimension(), personalDim.getPlayerPos());
+            blockEntity.placeSyncedDoor(worldIn.getServer().getWorld(DOFDimensions.INFINITY_DIM), personalDim.getPlayerPos());
         }
     }
 
 
-    private DoorHinge getHinge(ItemPlacementContext ctx)
+    private DoorHingeSide getHinge(BlockItemUseContext ctx)
     {
-        BlockView blockView = ctx.getWorld();
-        BlockPos blockPos = ctx.getBlockPos();
-        Direction direction = ctx.getPlayerFacing();
+        IBlockReader blockView = ctx.getWorld();
+        BlockPos blockPos = ctx.getPos();
+        Direction direction = ctx.getPlacementHorizontalFacing();
         BlockPos blockPos2 = blockPos.up();
-        Direction direction2 = direction.rotateYCounterclockwise();
+        Direction direction2 = direction.rotateYCCW();
         BlockPos blockPos3 = blockPos.offset(direction2);
         BlockState blockState = blockView.getBlockState(blockPos3);
         BlockPos blockPos4 = blockPos2.offset(direction2);
         BlockState blockState2 = blockView.getBlockState(blockPos4);
-        Direction direction3 = direction.rotateYClockwise();
+        Direction direction3 = direction.rotateY();
         BlockPos blockPos5 = blockPos.offset(direction3);
         BlockState blockState3 = blockView.getBlockState(blockPos5);
         BlockPos blockPos6 = blockPos2.offset(direction3);
         BlockState blockState4 = blockView.getBlockState(blockPos6);
-        int i = (blockState.isFullCube(blockView, blockPos3) ? -1 : 0)
-                + (blockState2.isFullCube(blockView, blockPos4) ? -1 : 0)
-                + (blockState3.isFullCube(blockView, blockPos5) ? 1 : 0)
-                + (blockState4.isFullCube(blockView, blockPos6) ? 1 : 0);
+        int i = (blockState.isNormalCube(blockView, blockPos3) ? -1 : 0)
+                + (blockState2.isNormalCube(blockView, blockPos4) ? -1 : 0)
+                + (blockState3.isNormalCube(blockView, blockPos5) ? 1 : 0)
+                + (blockState4.isNormalCube(blockView, blockPos6) ? 1 : 0);
         boolean bl = blockState.getBlock() == this && blockState.get(HALF) == DoubleBlockHalf.LOWER;
         boolean bl2 = blockState3.getBlock() == this && blockState3.get(HALF) == DoubleBlockHalf.LOWER;
         if((!bl || bl2) && i <= 0)
         {
             if((!bl2 || bl) && i >= 0)
             {
-                int j = direction.getOffsetX();
-                int k = direction.getOffsetZ();
-                Vec3d vec3d = ctx.getHitPos();
+                int j = direction.getXOffset();
+                int k = direction.getZOffset();
+                Vec3d vec3d = ctx.getHitVec();
                 double d = vec3d.x - (double) blockPos.getX();
                 double e = vec3d.z - (double) blockPos.getZ();
                 return (j >= 0 || e >= 0.5D) && (j <= 0 || e <= 0.5D) && (k >= 0 || d <= 0.5D) && (k <= 0 || d >= 0.5D)
-                        ? DoorHinge.LEFT
-                        : DoorHinge.RIGHT;
+                        ? DoorHingeSide.LEFT
+                        : DoorHingeSide.RIGHT;
             }
             else
             {
-                return DoorHinge.LEFT;
+                return DoorHingeSide.LEFT;
             }
         }
         else
         {
-            return DoorHinge.RIGHT;
+            return DoorHingeSide.RIGHT;
         }
     }
 
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand,
-                              BlockHitResult hit)
-    {
 
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit)
+    {
         state = (BlockState) state.cycle(OPEN);
         world.setBlockState(pos, state, 10);
-        world.playLevelEvent(player, (Boolean) state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+        world.playEvent(player, (Boolean) state.get(OPEN) ? this.getCloseSound() : this.getOpenSound(), pos, 0);
 
-        if(!world.isClient)
+        if(!world.isRemote)
         {
 
             BlockPos lowerPos = state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
 
-            InfinityDoorBlockEntity blockEntity = (InfinityDoorBlockEntity) world.getBlockEntity(lowerPos);
+            InfinityDoorBlockEntity blockEntity = (InfinityDoorBlockEntity) world.getTileEntity(lowerPos);
             blockEntity.updateSyncDoor();
         }
-        return ActionResult.SUCCESS;
+        return ActionResultType.SUCCESS;
 
     }
 
@@ -291,30 +272,34 @@ public class InfinityDoorBlock extends BlockWithEntity
         }
     }
 
-    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos,
+
+
+    public void neighborChanged(BlockState state, World world, BlockPos pos, Block block, BlockPos neighborPos,
                                boolean moved)
     {
         pos = state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
         state = world.getBlockState(pos);
-        InfinityDoorBlockEntity blockEntity = (InfinityDoorBlockEntity) world.getBlockEntity(pos);
-        if(!state.isAir() && !canPlaceAt(state, world, pos))
+        InfinityDoorBlockEntity blockEntity = (InfinityDoorBlockEntity) world.getTileEntity(pos);
+        if(!state.isAir() && !isValidPosition(state, world, pos))
         {
             blockEntity.deleteLocalPortal();
             world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), 35);
-            world.breakBlock(pos, true);
+            world.destroyBlock(pos, true);
 
         }
     }
 
-    public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos)
+
+
+    public boolean isValidPosition(BlockState state, IWorldReader world, BlockPos pos)
     {
-        if(!DOFConfig.getInstance().requireDoorBorder)
+        if(!DOFConfig.getInstance().requireDoorBorder.get())
         {
             BlockPos blockPos = pos.down();
             BlockState blockState = world.getBlockState(blockPos);
             if(state.get(HALF) == DoubleBlockHalf.LOWER)
             {
-                return blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
+                return blockState.isSolidSide(world, blockPos, Direction.UP);
             }
             else
             {
@@ -329,19 +314,19 @@ public class InfinityDoorBlock extends BlockWithEntity
 
     }
 
-    private boolean topAndBottomMatch(BlockPos pos, WorldView world)
+    private boolean topAndBottomMatch(BlockPos pos, IWorldReader world)
     {
-        Predicate<Block> matchingBlocks = (block) -> block == DOFBlocks.SIMULATED_BLOCK_OF_INFINITY
-                || block == DOFBlocks.BLOCK_OF_INFINITY;
+        Predicate<Block> matchingBlocks = (block) -> block == DOFBlocks.BLOCK_OF_INFINITY.get()
+                || block == DOFBlocks.GENERATED_BLOCK_OF_INFINITY.get();
         return matchingBlocks.test(world.getBlockState(pos.down()).getBlock())
                 && matchingBlocks.test(world.getBlockState(pos.up(2)).getBlock());
     }
 
-    private boolean sideMatches(BlockPos pos, WorldView world, Direction d)
+    private boolean sideMatches(BlockPos pos, IWorldReader world, Direction d)
     {
-        Predicate<Block> matchingBlocks = (block) -> block == DOFBlocks.SIMULATED_BLOCK_OF_INFINITY
-                || block == DOFBlocks.BLOCK_OF_INFINITY;
-        BlockPos sidePos = pos.add(d.getVector());
+        Predicate<Block> matchingBlocks = (block) -> block == DOFBlocks.BLOCK_OF_INFINITY.get()
+                || block == DOFBlocks.GENERATED_BLOCK_OF_INFINITY.get();
+        BlockPos sidePos = pos.add(d.getDirectionVec());
 
         return matchingBlocks.test(world.getBlockState(sidePos).getBlock())
                 && matchingBlocks.test(world.getBlockState(sidePos.up()).getBlock());
@@ -349,58 +334,56 @@ public class InfinityDoorBlock extends BlockWithEntity
 
     private void playOpenCloseSound(World world, BlockPos pos, boolean open)
     {
-        world.playLevelEvent((PlayerEntity) null, open ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos,
+        world.playEvent((PlayerEntity) null, open ? this.getCloseSound() : this.getOpenSound(), pos,
                 0);
     }
 
-    public PistonBehavior getPistonBehavior(BlockState state)
-    {
-        return PistonBehavior.BLOCK;
+    public PushReaction getPushReaction(BlockState state) {
+        return PushReaction.DESTROY;
     }
 
-    public BlockState rotate(BlockState state, BlockRotation rotation)
-    {
-        return (BlockState) state.with(FACING, rotation.rotate((Direction) state.get(FACING)));
+    public BlockState rotate(BlockState state, Rotation rot) {
+        return state.with(FACING, rot.rotate(state.get(FACING)));
     }
 
-    public BlockState mirror(BlockState state, BlockMirror mirror)
-    {
-        return mirror == BlockMirror.NONE ? state
-                : (BlockState) state.rotate(mirror.getRotation((Direction) state.get(FACING))).cycle(HINGE);
+    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+        return mirrorIn == Mirror.NONE ? state : state.rotate(mirrorIn.toRotation(state.get(FACING))).cycle(HINGE);
     }
 
-    @Environment(EnvType.CLIENT)
-    public long getRenderingSeed(BlockState state, BlockPos pos)
-    {
-        return MathHelper.hashCode(pos.getX(), pos.down(state.get(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(),
-                pos.getZ());
+    @OnlyIn(Dist.CLIENT)
+    public long getPositionRandom(BlockState state, BlockPos pos) {
+        return MathHelper.getCoordinateRandom(pos.getX(), pos.down(state.get(HALF) == DoubleBlockHalf.LOWER ? 0 : 1).getY(), pos.getZ());
     }
 
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
+    @Override
+    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
     {
         builder.add(HALF, FACING, OPEN, HINGE);
     }
 
     static
     {
-        FACING = HorizontalFacingBlock.FACING;
-        OPEN = Properties.OPEN;
-        HINGE = Properties.DOOR_HINGE;
-        HALF = Properties.DOUBLE_BLOCK_HALF;
-        NORTH_SHAPE = Block.createCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 3.0D);
-        SOUTH_SHAPE = Block.createCuboidShape(0.0D, 0.0D, 13.0D, 16.0D, 16.0D, 16.0D);
-        EAST_SHAPE = Block.createCuboidShape(13.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
-        WEST_SHAPE = Block.createCuboidShape(0.0D, 0.0D, 0.0D, 3.0D, 16.0D, 16.0D);
+        FACING = HorizontalBlock.HORIZONTAL_FACING;
+        OPEN = BlockStateProperties.OPEN;
+        HINGE = BlockStateProperties.DOOR_HINGE;
+        HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
+        SOUTH_SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 16.0D, 3.0D);
+        NORTH_SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 13.0D, 16.0D, 16.0D, 16.0D);
+        WEST_SHAPE = Block.makeCuboidShape(13.0D, 0.0D, 0.0D, 16.0D, 16.0D, 16.0D);
+        EAST_SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 3.0D, 16.0D, 16.0D);
     }
 
-    @Override
-    public BlockEntity createBlockEntity(BlockView view)
-    {
-        return new InfinityDoorBlockEntity();
-    }
+
 
     public BlockRenderType getRenderType(BlockState state)
     {
         return BlockRenderType.MODEL;
+    }
+
+    @Nullable
+    @Override
+    public TileEntity createNewTileEntity(IBlockReader worldIn)
+    {
+        return new InfinityDoorBlockEntity();
     }
 }

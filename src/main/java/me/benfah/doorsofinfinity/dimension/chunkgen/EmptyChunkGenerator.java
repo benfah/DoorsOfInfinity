@@ -1,42 +1,42 @@
 package me.benfah.doorsofinfinity.dimension.chunkgen;
 
-import net.minecraft.world.ChunkRegion;
-import net.minecraft.world.Heightmap.Type;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.provider.BiomeProvider;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.chunk.IChunk;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.WorldGenRegion;
 
 public class EmptyChunkGenerator extends ChunkGenerator<EmptyChunkGeneratorConfig>
 {
 
-	public EmptyChunkGenerator(IWorld world, BiomeSource biomeSource, EmptyChunkGeneratorConfig config)
+	public EmptyChunkGenerator(IWorld worldIn, BiomeProvider biomeProviderIn, EmptyChunkGeneratorConfig generationSettingsIn)
 	{
-		super(world, biomeSource, config);
+		super(worldIn, biomeProviderIn, generationSettingsIn);
 	}
 
 	@Override
-	public void buildSurface(ChunkRegion chunkRegion, Chunk chunk)
+	public void func_225551_a_(WorldGenRegion p_225551_1_, IChunk p_225551_2_)
 	{
-		
+
 	}
 
 	@Override
-	public int getSpawnHeight()
-	{
-		return 10;
-	}
-
-	@Override
-	public void populateNoise(IWorld world, Chunk chunk)
-	{
-		
-	}
-
-	@Override
-	public int getHeightOnGround(int x, int z, Type heightmapType)
+	public int getGroundHeight()
 	{
 		return 0;
 	}
 
+	@Override
+	public void makeBase(IWorld worldIn, IChunk chunkIn)
+	{
+
+	}
+
+	@Override
+	public int func_222529_a(int p_222529_1_, int p_222529_2_, Heightmap.Type p_222529_3_)
+	{
+		return 0;
+	}
 }

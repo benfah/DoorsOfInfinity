@@ -4,35 +4,29 @@ import me.benfah.doorsofinfinity.DOFMod;
 import me.benfah.doorsofinfinity.block.InfinityBlock;
 import me.benfah.doorsofinfinity.block.InfinityDoorBlock;
 import me.benfah.doorsofinfinity.block.PhotonTransmitterBlock;
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.block.SoundType;
+import net.minecraft.block.material.Material;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class DOFBlocks
 {
-	
-	public static Block BLOCK_OF_INFINITY = new InfinityBlock(FabricBlockSettings.copy(Blocks.BEDROCK).build());
-	public static Block SIMULATED_BLOCK_OF_INFINITY = new Block(FabricBlockSettings.copy(Blocks.STONE).build());
 
-	public static InfinityDoorBlock INFINITY_DOOR = new InfinityDoorBlock(FabricBlockSettings.copy(Blocks.IRON_DOOR).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).build());
-	public static InfinityDoorBlock SIMULATED_INFINITY_DOOR = new InfinityDoorBlock(FabricBlockSettings.copy(Blocks.IRON_DOOR).sounds(BlockSoundGroup.STONE).build());
+	private static DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, DOFMod.MOD_ID);
 
-	public static PhotonTransmitterBlock PHOTON_TRANSMITTER = new PhotonTransmitterBlock(FabricBlockSettings.of(Material.GLASS).nonOpaque().build());
+	public static RegistryObject<Block> GENERATED_BLOCK_OF_INFINITY = BLOCKS.register("generated_block_of_infinity", () -> new InfinityBlock(Block.Properties.from(Blocks.BEDROCK)));
+	public static RegistryObject<Block> BLOCK_OF_INFINITY = BLOCKS.register("block_of_infinity", () -> new Block(Block.Properties.from(Blocks.STONE)));
 
-	public static void init()
+	public static RegistryObject<InfinityDoorBlock> GENERATED_INFINITY_DOOR = BLOCKS.register("generated_infinity_door", () -> new InfinityDoorBlock(Block.Properties.from(Blocks.IRON_DOOR).hardnessAndResistance(-1.0F, 3600000.0F).sound(SoundType.STONE)));
+	public static RegistryObject<InfinityDoorBlock> INFINITY_DOOR = BLOCKS.register("infinity_door", () -> new InfinityDoorBlock(Block.Properties.from(Blocks.IRON_DOOR).sound(SoundType.STONE)));
+
+	public static RegistryObject<PhotonTransmitterBlock> PHOTON_TRANSMITTER = BLOCKS.register("photon_transmitter", () -> new PhotonTransmitterBlock(Block.Properties.create(Material.GLASS).variableOpacity()));
+
+	public static DeferredRegister<Block> getRegister()
 	{
-		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "block_of_infinity"), BLOCK_OF_INFINITY);
-		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "simulated_block_of_infinity"), SIMULATED_BLOCK_OF_INFINITY);
-
-		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "infinity_door"), INFINITY_DOOR);
-		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "simulated_infinity_door"), SIMULATED_INFINITY_DOOR);
-
-		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "photon_transmitter"), PHOTON_TRANSMITTER);
-
+		return BLOCKS;
 	}
-	
 }

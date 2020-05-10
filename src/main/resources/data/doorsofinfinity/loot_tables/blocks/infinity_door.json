@@ -35,11 +35,16 @@
                   "source": "SyncDoorZ",
                   "target": "BlockEntityTag.SyncDoorZ",
                   "op": "replace"
+                },
+                {
+                  "source": "Upgrades",
+                  "target": "BlockEntityTag.Upgrades",
+                  "op": "replace"
                 }
               ]
             }
           ],
-          "name": "doorsofinfinity:simulated_infinity_door"
+          "name": "doorsofinfinity:infinity_door"
         }
       ],
       "conditions": [

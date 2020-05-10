@@ -1,10 +1,10 @@
 package me.benfah.doorsofinfinity.item;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -13,21 +13,21 @@ import java.util.function.Function;
 public class LoreBlockItem extends BlockItem
 {
 
-    Function<ItemStack, Text>[] functions;
+    Function<ItemStack, ITextComponent>[] functions;
 
-    public LoreBlockItem(Block block, Settings settings, Function<ItemStack, Text>... functions)
+    public LoreBlockItem(Block block, Properties settings, Function<ItemStack, ITextComponent>... functions)
     {
         super(block, settings);
         this.functions = functions;
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context)
+    public void addInformation(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag context)
     {
-        super.appendTooltip(stack, world, tooltip, context);
-        for(Function<ItemStack, Text> func : functions)
+        super.addInformation(stack, world, tooltip, context);
+        for(Function<ItemStack, ITextComponent> func : functions)
         {
-            Text text = func.apply(stack);
+            ITextComponent text = func.apply(stack);
             if(text != null)
                 tooltip.add(text);
         }

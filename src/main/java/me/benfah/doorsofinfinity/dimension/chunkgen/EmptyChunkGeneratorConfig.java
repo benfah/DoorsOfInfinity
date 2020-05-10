@@ -1,7 +1,7 @@
 package me.benfah.doorsofinfinity.dimension.chunkgen;
 
-import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
+import net.minecraft.world.gen.GenerationSettings;
 
-public class EmptyChunkGeneratorConfig extends ChunkGeneratorConfig
+public class EmptyChunkGeneratorConfig extends GenerationSettings
 {
 }

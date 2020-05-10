@@ -8,20 +8,20 @@ import me.benfah.doorsofinfinity.block.entity.InfinityDoorBlockEntity;
 import me.benfah.doorsofinfinity.config.DOFConfig;
 import me.benfah.doorsofinfinity.init.DOFBlocks;
 import me.benfah.doorsofinfinity.init.DOFDimensions;
-import me.benfah.doorsofinfinity.utils.MCUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.server.ServerWorld;
 
 public class InfinityDimHelper
 {
 	
-	public static PersonalDimension getEmptyPersonalDimension()
+	public static PersonalDimension getEmptyPersonalDimension(MinecraftServer server)
 	{
-		ServerWorld infinityDim = MCUtils.getServer().getWorld(DOFDimensions.INFINITY_DIM);
+		ServerWorld infinityDim = server.getWorld(DOFDimensions.INFINITY_DIM);
 		BlockPos basePos = new BlockPos(0, 3, 0);
 		int offset = 0;
 		while(!infinityDim.getBlockState(basePos.add(offset * 200, 0, 0)).isAir())
@@ -31,25 +31,25 @@ public class InfinityDimHelper
 		return new PersonalDimension(offset, infinityDim);
 	}
 	
-	public static PersonalDimension getPersonalDimension(int id, int upgrades)
+	public static PersonalDimension getPersonalDimension(int id, int upgrades, MinecraftServer server)
 	{
-		ServerWorld infinityDim = MCUtils.getServer().getWorld(DOFDimensions.INFINITY_DIM);
+		ServerWorld infinityDim = server.getWorld(DOFDimensions.INFINITY_DIM);
 		return new PersonalDimension(id, upgrades, infinityDim);
 	}
 	
-	public PersonalDimension getPersonalDimensionAt(BlockPos pos)
+	public PersonalDimension getPersonalDimensionAt(BlockPos pos, MinecraftServer server)
 	{
-		return new PersonalDimension(pos.getX() / 200, MCUtils.getServer().getWorld(DOFDimensions.INFINITY_DIM));
+		return new PersonalDimension(pos.getX() / 200, server.getWorld(DOFDimensions.INFINITY_DIM));
 	}
 	
-	public static ServerWorld getInfinityDimension()
+	public static ServerWorld getInfinityDimension(MinecraftServer server)
 	{
-		return MCUtils.getServer().getWorld(DOFDimensions.INFINITY_DIM);
+		return server.getWorld(DOFDimensions.INFINITY_DIM);
 	}
 	
 	public static class PersonalDimension
 	{
-		private static int INNER_SIZE = DOFConfig.getInstance().dimensionSize;
+		private static int INNER_SIZE = DOFConfig.getInstance().dimensionSize.get();
 		private static int WALL_THICKNESS = 2;
 		private static int UPGRADE_MULTIPLIER = 8;
 
@@ -96,7 +96,7 @@ public class InfinityDimHelper
 
 		public boolean upgrade()
 		{
-			if(this.upgrades >= DOFConfig.getInstance().maxUpgrades)
+			if(this.upgrades >= DOFConfig.getInstance().maxUpgrades.get())
 			{
 				return false;
 			}
@@ -115,16 +115,16 @@ public class InfinityDimHelper
 				if(vec.getY() >= WALL_THICKNESS)
 					return Blocks.AIR.getDefaultState();
 				else
-					return DOFBlocks.BLOCK_OF_INFINITY.getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
+					return DOFBlocks.GENERATED_BLOCK_OF_INFINITY.get().getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
 			});
 
 
 
 			generateCube(getBasePosition(), getInnerSize(), WALL_THICKNESS, vec -> {
 				if(vec.getY() >= WALL_THICKNESS)
-					return DOFBlocks.BLOCK_OF_INFINITY.getDefaultState();
+					return DOFBlocks.GENERATED_BLOCK_OF_INFINITY.get().getDefaultState();
 				else
-					return DOFBlocks.BLOCK_OF_INFINITY.getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
+					return DOFBlocks.GENERATED_BLOCK_OF_INFINITY.get().getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
 			});
 
 			linkedBlockEntity.placeSyncedDoor(world, getPlayerPos());
@@ -133,7 +133,7 @@ public class InfinityDimHelper
 
 		private InfinityDoorBlockEntity getBlockEntity()
 		{
-			return (InfinityDoorBlockEntity) world.getBlockEntity(getPlayerPos());
+			return (InfinityDoorBlockEntity) world.getTileEntity(getPlayerPos());
 		}
 
 		public BlockPos getPlayerPos()
@@ -167,9 +167,9 @@ public class InfinityDimHelper
 
 			generateCube(getBasePosition(), getInnerSize(), WALL_THICKNESS, vec -> {
 				if(vec.getY() >= WALL_THICKNESS)
-					return DOFBlocks.BLOCK_OF_INFINITY.getDefaultState();
+					return DOFBlocks.GENERATED_BLOCK_OF_INFINITY.get().getDefaultState();
 				else
-					return DOFBlocks.BLOCK_OF_INFINITY.getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
+					return DOFBlocks.GENERATED_BLOCK_OF_INFINITY.get().getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
 			});
 
 			resetDoor();

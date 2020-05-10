@@ -8,7 +8,7 @@
 	"block.doorsofinfinity.photon_transmitter": "Photon Transmitter",
 	"item.doorsofinfinity.photon_link": "Photon Link",
 	"item.doorsofinfinity.dimensional_shard": "Dimensional Shard",
-	"itemGroup.doorsofinfinity.items": "Doors of Infinity",
+	"itemGroup.doorsofinfinity": "Doors of Infinity",
 	"block.doorsofinfinity.block_of_infinity": "Block of Infinity",
 	"block.doorsofinfinity.simulated_infinity_door": "Infinity Door",
 	"block.doorsofinfinity.simulated_block_of_infinity": "Block of Infinity",

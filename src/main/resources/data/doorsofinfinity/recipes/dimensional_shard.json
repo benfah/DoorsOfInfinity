@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DID",
+    "IPI",
+    "DID"
+  ],
+  "key": {
+    "I": {
+      "item": "doorsofinfinity:block_of_infinity"
+    },
+    "P": {
+      "item": "minecraft:prismarine_shard"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "result": {
+    "item": "doorsofinfinity:dimensional_shard",
+    "count": 1
+  }
+}

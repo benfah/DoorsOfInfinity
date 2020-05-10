@@ -1,10 +1,13 @@
 package me.benfah.doorsofinfinity.utils;
 
+import com.mojang.datafixers.util.Pair;
 import com.qouteall.immersive_portals.my_util.IntBox;
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.state.property.Property;
-import net.minecraft.util.Pair;
+import net.minecraft.command.arguments.NBTCompoundTagArgument;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.state.IProperty;
+import net.minecraft.state.Property;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
 
 import java.util.Comparator;
@@ -19,9 +22,9 @@ import java.util.stream.IntStream;
 public class BoxUtils
 {
 	
-	public static Box getBoxInclusive(BlockPos pos1, BlockPos pos2)
+	public static AxisAlignedBB getBoxInclusive(BlockPos pos1, BlockPos pos2)
 	{
-		return new Box(new Vec3d(pos1.getX(), pos1.getY(), pos1.getZ()), new Vec3d(pos2.getX() + 1, pos2.getY() + 1, pos2.getZ() + 1));
+		return new AxisAlignedBB(new Vec3d(pos1.getX(), pos1.getY(), pos1.getZ()), new Vec3d(pos2.getX() + 1, pos2.getY() + 1, pos2.getZ() + 1));
 	}
 
 	public static Pair<BlockPos, BlockPos> getAnchors(IntBox box)
@@ -31,9 +34,9 @@ public class BoxUtils
 		return new Pair<>(lowAnchorPos, highAnchorPos);
 	}
 
-	public static CompoundTag vecToTag(Vec3i vec3i)
+	public static CompoundNBT vecToTag(Vec3i vec3i)
 	{
-		CompoundTag tag = new CompoundTag();
+		CompoundNBT tag = new CompoundNBT();
 
 		tag.putInt("PosX" , vec3i.getX());
 		tag.putInt("PosY" , vec3i.getY());
@@ -42,7 +45,7 @@ public class BoxUtils
 		return tag;
 	}
 
-	public static Vec3i vecFromTag(CompoundTag vec3i)
+	public static Vec3i vecFromTag(CompoundNBT vec3i)
 	{
 		int x = vec3i.getInt("PosX");
 		int y = vec3i.getInt("PosY");
@@ -53,15 +56,15 @@ public class BoxUtils
 
 	public static PlaneInfo getPlaneFromIntBox(IntBox box, Direction direction)
 	{
-		Direction rightDirection = Direction.fromHorizontal(getAbsoluteHorizontal(direction.getHorizontal() - 1));
+		Direction rightDirection = Direction.byHorizontalIndex(getAbsoluteHorizontal(direction.getHorizontalIndex() - 1));
 
-		Vec3i axisH = Direction.UP.getVector();
-		Vec3i axisW = rightDirection.getVector();
-		Vec3i axisL = direction.getVector();
+		Vec3i axisH = Direction.UP.getDirectionVec();
+		Vec3i axisW = rightDirection.getDirectionVec();
+		Vec3i axisL = direction.getDirectionVec();
 
 		int height = box.stream().mapToInt(BlockPos::getY).max().getAsInt() - box.stream().mapToInt(BlockPos::getY).min().getAsInt() + 1;
 
-		IntSummaryStatistics widthStream = box.stream().mapToInt(pos -> rightDirection.getAxis().choose(pos.getX(), pos.getY(), pos.getZ())).summaryStatistics();
+		IntSummaryStatistics widthStream = box.stream().mapToInt(pos -> rightDirection.getAxis().getCoordinate(pos.getX(), pos.getY(), pos.getZ())).summaryStatistics();
 
 		int width = widthStream.getMax() - widthStream.getMin() + 1;
 
@@ -74,10 +77,9 @@ public class BoxUtils
 		return new PlaneInfo(axisW, axisH, width, height, new BlockPos(x, y, z));
 	}
 
-	public static <T extends Comparable<T>> boolean hasSamePropertyValue(Property<T> property, BlockState toCompare, T value)
+	public static <T extends Comparable<T>> boolean hasSamePropertyValue(IProperty<T> property, BlockState toCompare, T value)
 	{
-
-		Optional<Property<?>> optional = toCompare.getProperties().stream().filter(compProp -> compProp.equals(property)).findAny();
+		Optional<IProperty<?>> optional = toCompare.getProperties().stream().filter(compProp -> compProp.equals(property)).findAny();
 
 		if(optional.isPresent())
 		{
@@ -111,7 +113,7 @@ public class BoxUtils
 			this.pos = pos;
 		}
 
-		public PlaneInfo(CompoundTag tag)
+		public PlaneInfo(CompoundNBT tag)
 		{
 			this.axisW = BoxUtils.vecFromTag(tag.getCompound("AxisW"));
 			this.axisH = BoxUtils.vecFromTag(tag.getCompound("AxisH"));
@@ -122,7 +124,7 @@ public class BoxUtils
 			this.pos = new BlockPos(BoxUtils.vecFromTag(tag.getCompound("StartPos")));
 		}
 
-		public CompoundTag toCompound(CompoundTag tag)
+		public CompoundNBT toCompound(CompoundNBT tag)
 		{
 			tag.put("AxisW", BoxUtils.vecToTag(axisW));
 			tag.put("AxisH", BoxUtils.vecToTag(axisH));

@@ -6,46 +6,39 @@ import me.benfah.doorsofinfinity.utils.BoxUtils;
 import me.benfah.doorsofinfinity.utils.MCUtils;
 import me.benfah.doorsofinfinity.utils.PortalCreationHelper;
 import net.minecraft.block.AbstractGlassBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.util.math.Matrix3f;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
+import net.minecraft.item.ItemUseContext;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
-
-import java.util.Comparator;
 import java.util.List;
 
 public class PhotonLinkItem extends Item
 {
-    public PhotonLinkItem(Settings settings)
+    public PhotonLinkItem(Properties settings)
     {
         super(settings);
     }
 
-    @Override
-    public ActionResult useOnBlock(ItemUsageContext context)
-    {
-        if(context.getStack().getSubTag("PhotonLink") != null && MCUtils.immersivePortalsPresent)
-        {
-            CompoundTag tag = context.getStack().getSubTag("PhotonLink");
 
-            Direction savedFacing = Direction.fromHorizontal(tag.getInt("Direction")).getOpposite();
-            Direction currentFacing = context.getSide();
+    @Override
+    public ActionResultType onItemUse(ItemUseContext context)
+    {
+        if(context.getItem().getChildTag("PhotonLink") != null && !context.getWorld().isRemote && MCUtils.immersivePortalsPresent)
+        {
+            CompoundNBT tag = context.getItem().getChildTag("PhotonLink");
+
+            Direction savedFacing = Direction.byHorizontalIndex(tag.getInt("Direction")).getOpposite();
+            Direction currentFacing = context.getFace();
 
             BoxUtils.PlaneInfo savedPlane = new BoxUtils.PlaneInfo(tag);
             IntBox savedIntBox = new IntBox(savedPlane.pos, savedPlane.pos.add((savedPlane.width - 1) * savedPlane.axisW.getX(), savedPlane.height - 1, (savedPlane.width - 1) * savedPlane.axisW.getZ()));
@@ -55,46 +48,46 @@ public class PhotonLinkItem extends Item
 
 
 
-            IntBox currentIntBox = Helper.expandRectangle(context.getBlockPos(), (pos) -> context.getWorld().getBlockState(pos).getBlock() instanceof AbstractGlassBlock, context.getSide().getAxis());
+            IntBox currentIntBox = Helper.expandRectangle(context.getPos(), (pos) -> context.getWorld().getBlockState(pos).getBlock() instanceof AbstractGlassBlock, context.getFace().getAxis());
 
-            BoxUtils.PlaneInfo currentPlane = BoxUtils.getPlaneFromIntBox(currentIntBox, context.getSide());
+            BoxUtils.PlaneInfo currentPlane = BoxUtils.getPlaneFromIntBox(currentIntBox, context.getFace());
 
-            Vec3d entityVec = currentIntBox.getCenterVec().add(0.495 * currentFacing.getOffsetX(), 0, 0.495 * currentFacing.getOffsetZ());
-            Vec3d vecToRender = savedIntBox.getCenterVec().subtract(savedFacing.getOffsetX() != 0 ? 0.5 * savedFacing.getOffsetX() : 0, 0, savedFacing.getOffsetZ() != 0 ? 0.5 * savedFacing.getOffsetZ() : 0);
+            Vec3d entityVec = currentIntBox.getCenterVec().add(0.495 * currentFacing.getXOffset(), 0, 0.495 * currentFacing.getZOffset());
+            Vec3d vecToRender = savedIntBox.getCenterVec().subtract(savedFacing.getXOffset() != 0 ? 0.5 * savedFacing.getXOffset() : 0, 0, savedFacing.getZOffset() != 0 ? 0.5 * savedFacing.getZOffset() : 0);
 
-            int difference = BoxUtils.getAbsoluteHorizontal(currentFacing.getHorizontal() - savedFacing.getHorizontal());
+            int difference = BoxUtils.getAbsoluteHorizontal(currentFacing.getHorizontalIndex() - savedFacing.getHorizontalIndex());
 
-            DimensionType type = DimensionType.byRawId(tag.getInt("DimensionId"));
+            DimensionType type = DimensionType.getById(tag.getInt("DimensionId"));
 
             if(savedPlane.equals(currentPlane))
             {
                 PortalCreationHelper.spawnBreakable(context.getWorld(), entityVec, currentPlane.width,
                         currentPlane.height, currentPlane.axisW, currentPlane.axisH,
                         type, vecToRender, false,
-                        Vector3f.POSITIVE_Y.getDegreesQuaternion(difference * 90), false, savedIntBox, currentIntBox, MCUtils.getServer().getWorld(type));
+                        Vector3f.YP.rotationDegrees(difference * 90), false, savedIntBox, currentIntBox, context.getWorld().getServer().getWorld(type));
 
-                context.getStack().removeSubTag("PhotonLink");
+                context.getItem().removeChildTag("PhotonLink");
 
-                return ActionResult.SUCCESS;
+                return ActionResultType.SUCCESS;
             }
 
         }
-        return ActionResult.CONSUME;
+        return ActionResultType.CONSUME;
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context)
+    public void addInformation(ItemStack stack, World world, List<ITextComponent> tooltip, ITooltipFlag context)
     {
-        CompoundTag tag = stack.getSubTag("PhotonLink");
+        CompoundNBT tag = stack.getChildTag("PhotonLink");
 
         if(!MCUtils.immersivePortalsPresent)
-        tooltip.add(new TranslatableText("lore.doorsofinfinity.ip_not_present").formatted(Formatting.GRAY));
+        tooltip.add(new TranslationTextComponent("lore.doorsofinfinity.ip_not_present").applyTextStyle(TextFormatting.GRAY));
 
         if(tag != null)
         {
-            tooltip.add(new TranslatableText("lore.doorsofinfinity.photo_link_size", tag.getInt("Width"), tag.getInt("Height")).formatted(Formatting.GRAY));
+            tooltip.add(new TranslationTextComponent("lore.doorsofinfinity.photo_link_size", tag.getInt("Width"), tag.getInt("Height")).applyTextStyle(TextFormatting.GRAY));
         }
 
-        super.appendTooltip(stack, world, tooltip, context);
+        super.addInformation(stack, world, tooltip, context);
     }
 }

@@ -6,7 +6,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "doorsofinfinity:simulated_block_of_infinity"
+          "name": "doorsofinfinity:block_of_infinity"
         }
       ],
       "conditions": [

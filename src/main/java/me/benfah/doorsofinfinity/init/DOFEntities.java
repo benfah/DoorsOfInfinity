@@ -1,27 +1,28 @@
 package me.benfah.doorsofinfinity.init;
 
-import com.qouteall.immersive_portals.render.PortalEntityRenderer;
 import me.benfah.doorsofinfinity.DOFMod;
 import me.benfah.doorsofinfinity.entity.BreakablePortal;
-import me.benfah.doorsofinfinity.utils.MCUtils;
-import net.fabricmc.fabric.api.client.rendereregistry.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCategory;
-import net.minecraft.entity.EntityDimensions;
+
+import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class DOFEntities
 {
 
-    public static EntityType<?> BREAKABLE_PORTAL;
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = new DeferredRegister<>(ForgeRegistries.ENTITIES, DOFMod.MOD_ID);
 
-    public static void init()
+    public static final RegistryObject<EntityType<BreakablePortal>> BREAKABLE_PORTAL = ENTITY_TYPES.register("breakable_portal", () -> EntityType.Builder
+            .create(BreakablePortal::new, EntityClassification.MISC)
+            .size(1, 1)
+            .immuneToFire().build(""));
+
+    public static DeferredRegister getDeferredRegister()
     {
-            BREAKABLE_PORTAL = Registry.register(Registry.ENTITY_TYPE, new Identifier(DOFMod.MOD_ID, "breakable_portal"), FabricEntityTypeBuilder.create(EntityCategory.MISC,
-                BreakablePortal::new).size(EntityDimensions.fixed(1, 1)).setImmuneToFire().build());
+            return ENTITY_TYPES;
     }
 
 

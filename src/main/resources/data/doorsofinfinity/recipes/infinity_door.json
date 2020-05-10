@@ -7,7 +7,7 @@
 	],
 	"key": {
 		"I": {
-			"item": "doorsofinfinity:simulated_block_of_infinity"
+			"item": "doorsofinfinity:block_of_infinity"
 		},
 		"E": {
 			"item": "minecraft:iron_door"
@@ -17,7 +17,7 @@
 		}
 	},
 	"result": {
-		"item": "doorsofinfinity:simulated_infinity_door",
+		"item": "doorsofinfinity:infinity_door",
 		"count": 1
 	}
 }

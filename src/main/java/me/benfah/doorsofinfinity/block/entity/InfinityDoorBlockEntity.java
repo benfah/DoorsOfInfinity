@@ -1,8 +1,8 @@
 package me.benfah.doorsofinfinity.block.entity;
 
+import com.qouteall.immersive_portals.McHelper;
 import com.qouteall.immersive_portals.portal.Portal;
 import com.qouteall.immersive_portals.portal.PortalManipulation;
-
 import me.benfah.doorsofinfinity.block.InfinityDoorBlock;
 import me.benfah.doorsofinfinity.dimension.InfinityDimHelper;
 import me.benfah.doorsofinfinity.dimension.InfinityDimHelper.PersonalDimension;
@@ -12,19 +12,28 @@ import me.benfah.doorsofinfinity.init.DOFDimensions;
 import me.benfah.doorsofinfinity.utils.BoxUtils;
 import me.benfah.doorsofinfinity.utils.MCUtils;
 import me.benfah.doorsofinfinity.utils.PortalCreationHelper;
-import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.block.pattern.BlockPattern;
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Tickable;
+import net.minecraft.client.renderer.Quaternion;
+import net.minecraft.client.renderer.Vector3f;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.state.properties.DoubleBlockHalf;
+import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Direction;
 import net.minecraft.util.math.*;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.ITeleporter;
 
-public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
+import java.util.function.Function;
+
+public class InfinityDoorBlockEntity extends TileEntity implements ITickableTileEntity
 {
 
 	public PersonalDimension link;
@@ -34,9 +43,11 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 
 	public Portal localPortal;
 
+	public int installedUpgrades = 0;
+
 	public InfinityDoorBlockEntity()
 	{
-		super(DOFBlockEntities.INFINITY_DOOR);
+		super(DOFBlockEntities.INFINITY_DOOR.get());
 	}
 
 	public void syncWith(InfinityDoorBlockEntity entity)
@@ -45,20 +56,27 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 		entity.syncDoorWorld = this.world;
 		this.syncDoorPos = entity.pos;
 		this.syncDoorWorld = entity.world;
+
+		int upgrades = Math.max(entity.installedUpgrades, this.installedUpgrades);
+
+		this.installedUpgrades = upgrades;
+		entity.installedUpgrades = upgrades;
+
+		world.notifyBlockUpdate(pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
+		entity.world.notifyBlockUpdate(entity.pos, getBlockState(), getBlockState(), Constants.BlockFlags.BLOCK_UPDATE);
 	}
 
 	public void updateSyncDoor()
 	{
-		if (syncPresent())
+		if (isSyncPresent())
 		{
 			syncDoorWorld.setBlockState(syncDoorPos,
 					getSyncEntity().getWorld().getBlockState(getSyncEntity().getPos())
-							.with(InfinityDoorBlock.HINGE, getCachedState().get(InfinityDoorBlock.HINGE))
-							.with(InfinityDoorBlock.OPEN, getCachedState().get(InfinityDoorBlock.OPEN)),
+							.with(InfinityDoorBlock.HINGE, getBlockState().get(InfinityDoorBlock.HINGE))
+							.with(InfinityDoorBlock.OPEN, getBlockState().get(InfinityDoorBlock.OPEN)),
 					10);
-
 			if (MCUtils.immersivePortalsPresent && world.getDimension().getType() == DOFDimensions.INFINITY_DIM
-					&& world.getEntities(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).isEmpty())
+					&& world.getEntitiesWithinAABB(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).isEmpty())
 			{
 				deleteSyncPortal();
 				PortalManipulation.completeBiWayPortal(getSyncEntity().localPortal, Portal.entityType);
@@ -84,21 +102,18 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 	
 	private void deletePortals(World world, BlockPos pos)
 	{
-		world.getEntities(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).forEach((portal) ->
+		world.getEntitiesWithinAABB(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).forEach((portal) ->
 		{
-//			PortalManipulation.removeConnectedPortals(portal, (t) ->
-//			{
-//			});
 			portal.remove();
 		});
 	}
 
 	public void createSyncedPortals()
 	{
-		Direction direction = getCachedState().get(InfinityDoorBlock.FACING);
-		Direction rightDirection = Direction.fromHorizontal(direction.getHorizontal() + 1);
+		Direction direction = getBlockState().get(InfinityDoorBlock.FACING);
+		Direction rightDirection = Direction.byHorizontalIndex(direction.getHorizontalIndex() + 1);
 		Vec3d portalPos = new Vec3d(pos).add(0.5, 1, 0.5);
-		Quaternion rot = new Quaternion(Vector3f.POSITIVE_Y, direction.getOpposite().getHorizontal() * 90, true);
+		Quaternion rot = new Quaternion(Vector3f.YP, direction.getOpposite().getHorizontalIndex() * 90, true);
 
 		PersonalDimension personalDim = getOrCreateLinkedDimension();
 		if(MCUtils.immersivePortalsPresent)
@@ -113,20 +128,21 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 
 	public void placeSyncedDoor(World otherWorld, BlockPos otherPos)
 	{
-		BlockState state = getCachedState();
+		BlockState state = getBlockState();
 			otherWorld.setBlockState(otherPos,
-					DOFBlocks.INFINITY_DOOR.getDefaultState()
+					DOFBlocks.GENERATED_INFINITY_DOOR.get().getDefaultState()
 							.with(InfinityDoorBlock.HINGE, state.get(InfinityDoorBlock.HINGE))
 							.with(InfinityDoorBlock.FACING, MCUtils.immersivePortalsPresent ? Direction.NORTH : Direction.SOUTH)
 							.with(InfinityDoorBlock.HALF, DoubleBlockHalf.LOWER));
 			otherWorld.setBlockState(otherPos.up(),
-					DOFBlocks.INFINITY_DOOR.getDefaultState()
+					DOFBlocks.GENERATED_INFINITY_DOOR.get().getDefaultState()
 							.with(InfinityDoorBlock.HINGE, state.get(InfinityDoorBlock.HINGE))
 							.with(InfinityDoorBlock.FACING, MCUtils.immersivePortalsPresent ? Direction.NORTH : Direction.SOUTH)
 							.with(InfinityDoorBlock.HALF, DoubleBlockHalf.UPPER));
 
-		InfinityDoorBlockEntity dimInfinityDoor = (InfinityDoorBlockEntity) otherWorld.getBlockEntity(otherPos);
+		InfinityDoorBlockEntity dimInfinityDoor = (InfinityDoorBlockEntity) otherWorld.getTileEntity(otherPos);
 		syncWith(dimInfinityDoor);
+		this.createSyncedPortals();
 	}
 
 	public void sync()
@@ -139,62 +155,123 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable
 		if (syncDoorWorld == null)
 			return null;
 
-		return (InfinityDoorBlockEntity) syncDoorWorld.getBlockEntity(syncDoorPos);
+		return (InfinityDoorBlockEntity) syncDoorWorld.getTileEntity(syncDoorPos);
 	}
 
 	public PersonalDimension getOrCreateLinkedDimension()
 	{
 		if (link == null)
 		{
-			link = InfinityDimHelper.getEmptyPersonalDimension();
+			link = InfinityDimHelper.getEmptyPersonalDimension(world.getServer());
 			link.generate();
 		}
 		return link;
 	}
 
-	@Override
-	public void fromTag(CompoundTag tag)
+	private CompoundNBT writeClientData(CompoundNBT compound)
 	{
-		if (tag.contains("SyncDoorDimId"))
-		{
-			syncDoorWorld = MCUtils.getServer().getWorld(DimensionType.byRawId(tag.getInt("SyncDoorDimId")));
-			syncDoorPos = new BlockPos(tag.getInt("SyncDoorX"), tag.getInt("SyncDoorY"), tag.getInt("SyncDoorZ"));
-		}
+		compound.putInt("Upgrades", installedUpgrades);
+		return compound;
+	}
 
-		super.fromTag(tag);
+	private void readClientData(CompoundNBT compound)
+	{
+		installedUpgrades = compound.getInt("Upgrades");
+	}
+
+
+	@Override
+	public SUpdateTileEntityPacket getUpdatePacket()
+	{
+		return new SUpdateTileEntityPacket(getPos(), -1, writeClientData(new CompoundNBT()));
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag)
+	public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt)
+	{
+		super.onDataPacket(net, pkt);
+		readClientData(pkt.getNbtCompound());
+	}
+
+	@Override
+	public CompoundNBT getUpdateTag()
+	{
+		return writeClientData(super.getUpdateTag());
+	}
+
+	@Override
+	public void handleUpdateTag(CompoundNBT tag)
+	{
+		super.handleUpdateTag(tag);
+		readClientData(tag);
+	}
+
+	@Override
+	public void read(CompoundNBT tag)
+	{
+		if (tag.contains("SyncDoorDimId"))
+		{
+			syncDoorWorld = McHelper.getServer().getWorld(DimensionType.getById(tag.getInt("SyncDoorDimId")));
+			syncDoorPos = new BlockPos(tag.getInt("SyncDoorX"), tag.getInt("SyncDoorY"), tag.getInt("SyncDoorZ"));
+		}
+
+		if(tag.contains("Upgrades"))
+		{
+			installedUpgrades = tag.getInt("Upgrades");
+		}
+
+		if (tag.contains("DimOffset"))
+			link = InfinityDimHelper.getPersonalDimension(tag.getInt("DimOffset"), installedUpgrades, McHelper.getServer());
+		super.read(tag);
+
+	}
+
+
+
+	@Override
+	public CompoundNBT write(CompoundNBT tag)
 	{
 		if (link != null)
 			tag.putInt("DimOffset", link.getDimensionOffset());
 		if (syncDoorWorld != null)
 		{
-			tag.putInt("SyncDoorDimId", syncDoorWorld.getDimension().getType().getRawId());
+			tag.putInt("SyncDoorDimId", syncDoorWorld.getDimension().getType().getId());
 
 			tag.putInt("SyncDoorX", syncDoorPos.getX());
 			tag.putInt("SyncDoorY", syncDoorPos.getY());
 			tag.putInt("SyncDoorZ", syncDoorPos.getZ());
 		}
-		return super.toTag(tag);
+
+		tag.putInt("Upgrades", installedUpgrades);
+
+		return super.write(tag);
 	}
 
 	@Override
 	public void tick()
 	{
-		if(!world.isClient && !MCUtils.immersivePortalsPresent && getCachedState().get(InfinityDoorBlock.HALF) == DoubleBlockHalf.LOWER && syncDoorWorld != null)
+		if(!world.isRemote && !MCUtils.immersivePortalsPresent && getBlockState().get(InfinityDoorBlock.HALF) == DoubleBlockHalf.LOWER && syncDoorWorld != null)
 		{
-			world.getEntities(null, BoxUtils.getBoxInclusive(pos, pos.up())).forEach(entity ->
+			world.getEntitiesWithinAABB(PlayerEntity.class, BoxUtils.getBoxInclusive(pos, pos.up())).forEach(entity ->
 			{
-				FabricDimensions.teleport(entity, syncDoorWorld.getDimension().getType(), (entity1, serverWorld, direction, v, v1) -> {
-					if(link != null)
-						return new BlockPattern.TeleportTarget(link.getPlayerPosCentered().add(0, 0, -1), Vec3d.ZERO, 180);
-					else
+				entity.changeDimension(syncDoorWorld.getDimension().getType(), new ITeleporter() {
+					@Override
+					public Entity placeEntity(Entity entity, ServerWorld currentWorld, ServerWorld destWorld, float yaw, Function<Boolean, Entity> repositionEntity)
 					{
-						Direction facing = getSyncEntity().getCachedState().get(InfinityDoorBlock.FACING);
-						BlockPos pos = syncDoorPos.add(facing.getOpposite().getVector());
-						return new BlockPattern.TeleportTarget(new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5), Vec3d.ZERO, 180);
+
+						if(link != null)
+						{
+							Vec3d pos = link.getPlayerPosCentered().add(0, 0, -1);
+							entity.setPositionAndRotation(pos.getX(), pos.getY(), pos.getZ(), 180, 0);
+							return entity;
+						}
+						else
+						{
+							Direction facing = getSyncEntity().getBlockState().get(InfinityDoorBlock.FACING);
+							BlockPos pos = syncDoorPos.add(facing.getOpposite().getDirectionVec());
+							entity.setPositionAndRotation(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, 180, 0);
+							return entity;
+						}
 					}
 				});
 			});
