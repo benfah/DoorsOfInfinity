@@ -23,7 +23,6 @@ public class InfinityDimension extends Dimension
 	public InfinityDimension(World world, DimensionType type)
 	{
 		super(world, type, 0.5F);
-		world.getGameRules().get(GameRules.DO_MOB_SPAWNING).set(false, MCUtils.getServer());
 	}
 	
 	@Override
