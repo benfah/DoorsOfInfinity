@@ -9,7 +9,10 @@ import me.benfah.doorsofinfinity.utils.MCUtils;
 import net.minecraft.block.AbstractGlassBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -21,18 +24,29 @@ public class BreakablePortal extends Portal
 
     public World transmitterWorld;
 
-    public BreakablePortal(World world_1)
+    public BreakablePortal(EntityType<? extends BreakablePortal> entityType, World world_1)
     {
-        super(DOFEntities.BREAKABLE_PORTAL, world_1);
+        super(entityType, world_1);
     }
-
+    
     @Override
     protected void readCustomDataFromTag(CompoundTag compoundTag)
     {
         super.readCustomDataFromTag(compoundTag);
-        transmitterArea = new IntBox(new BlockPos(BoxUtils.vecFromTag(compoundTag.getCompound("PhotonTransmitterL"))), new BlockPos(BoxUtils.vecFromTag(compoundTag.getCompound("PhotonTransmitterH"))));
-        glassArea = new IntBox(new BlockPos(BoxUtils.vecFromTag(compoundTag.getCompound("GlassAreaL"))), new BlockPos(BoxUtils.vecFromTag(compoundTag.getCompound("GlassAreaH"))));
-        transmitterWorld = MCUtils.getServer().getWorld(DimensionType.byRawId(compoundTag.getInt("WorldId")));
+        if(!world.isClient)
+        {
+	        transmitterArea = new IntBox(new BlockPos(BoxUtils.vecFromTag(compoundTag.getCompound("PhotonTransmitterL"))), new BlockPos(BoxUtils.vecFromTag(compoundTag.getCompound("PhotonTransmitterH"))));
+	        glassArea = new IntBox(new BlockPos(BoxUtils.vecFromTag(compoundTag.getCompound("GlassAreaL"))), new BlockPos(BoxUtils.vecFromTag(compoundTag.getCompound("GlassAreaH"))));
+	        
+	//        transmitterWorld = MCUtils.getServer().getWorld(DimensionType.byRawId(compoundTag.getInt("WorldId")));
+	        
+	        if(compoundTag.contains("WorldName"))
+	        {
+	        	transmitterWorld = world.getServer().getWorld(RegistryKey.of(Registry.DIMENSION, new Identifier(compoundTag.getString("WorldName"))));
+	        }
+	        else
+	        this.remove();
+	    }
     }
 
     @Override
@@ -45,7 +59,7 @@ public class BreakablePortal extends Portal
         compoundTag.put("GlassL", BoxUtils.vecToTag(glassArea.l));
         compoundTag.put("GlassH", BoxUtils.vecToTag(glassArea.h));
 
-        compoundTag.putInt("WorldId", transmitterWorld.getDimension().getType().getRawId());
+        compoundTag.putString("WorldName", transmitterWorld.getRegistryKey().getValue().toString());
 
     }
 

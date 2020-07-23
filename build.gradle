@@ -1,6 +1,11 @@
 plugins {
-	id 'fabric-loom' version '0.2.6-SNAPSHOT'
+	id 'fabric-loom' version '0.2.7-SNAPSHOT'
 	id 'maven-publish'
+}
+
+repositories {
+			
+	maven { url 'https://jitpack.io' }
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -10,24 +15,27 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
+
+
 dependencies {
 	//to change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 
-	include "me.sargunvohra.mcmods:autoconfig1u:2.0.1"
-	include "me.shedaniel.cloth:config-2:3.3.2-unstable"
+	include "me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable"
+	include "me.shedaniel.cloth:config-2:4.5.6"
 
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
+	
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
-	modImplementation "io.github.prospector:modmenu:1.11.1+build.4"
+	modImplementation "io.github.prospector:modmenu:1.13.0+build.20"
 
-	modApi "me.sargunvohra.mcmods:autoconfig1u:2.0.1"
+	modApi "me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable"
 
-	modApi "me.shedaniel.cloth:config-2:3.3.2-unstable"
+	modApi "me.shedaniel.cloth:config-2:4.5.6"
+	
 	
 	compile fileTree(dir: 'libs', include: ['*.jar'])
 	

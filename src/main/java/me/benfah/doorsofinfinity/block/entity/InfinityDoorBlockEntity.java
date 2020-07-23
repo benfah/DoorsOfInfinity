@@ -20,8 +20,12 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.*;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.lwjgl.system.CallbackI;
@@ -71,7 +75,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, Bl
 							.with(InfinityDoorBlock.OPEN, getCachedState().get(InfinityDoorBlock.OPEN)),
 					10);
 
-			if (MCUtils.immersivePortalsPresent && world.getDimension().getType() == DOFDimensions.INFINITY_DIM
+			if (MCUtils.immersivePortalsPresent && world.getRegistryKey().equals(DOFDimensions.INFINITY_DIM)
 					&& world.getEntities(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).isEmpty())
 			{
 				deleteSyncPortal();
@@ -192,9 +196,9 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, Bl
 	{
 
 
-		if (tag.contains("SyncDoorDimId"))
+		if (tag.contains("SyncDoorDimName"))
 		{
-			syncDoorWorld = MCUtils.getServer().getWorld(DimensionType.byRawId(tag.getInt("SyncDoorDimId")));
+			syncDoorWorld = MCUtils.getServer().getWorld(RegistryKey.of(Registry.DIMENSION, new Identifier(tag.getString("SyncDoorDimName"))));
 			syncDoorPos = new BlockPos(tag.getInt("SyncDoorX"), tag.getInt("SyncDoorY"), tag.getInt("SyncDoorZ"));
 		}
 
@@ -216,7 +220,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, Bl
 			tag.putInt("DimOffset", link.getDimensionOffset());
 		if (syncDoorWorld != null)
 		{
-			tag.putInt("SyncDoorDimId", syncDoorWorld.getDimension().getType().getRawId());
+			tag.putString("SyncDoorDimName", syncDoorWorld.getRegistryKey().getValue().toString());
 
 			tag.putInt("SyncDoorX", syncDoorPos.getX());
 			tag.putInt("SyncDoorY", syncDoorPos.getY());
@@ -228,6 +232,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, Bl
 		return super.toTag(tag);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void tick()
 	{
@@ -235,7 +240,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, Bl
 		{
 			world.getEntities(null, BoxUtils.getBoxInclusive(pos, pos.up())).forEach(entity ->
 			{
-				FabricDimensions.teleport(entity, syncDoorWorld.getDimension().getType(), (entity1, serverWorld, direction, v, v1) -> {
+				FabricDimensions.teleport(entity, (ServerWorld) syncDoorWorld, (teleported, destination, direction, v, v1) -> {
 					if(link != null)
 						return new BlockPattern.TeleportTarget(link.getPlayerPosCentered().add(0, 0, -1), Vec3d.ZERO, 180);
 					else

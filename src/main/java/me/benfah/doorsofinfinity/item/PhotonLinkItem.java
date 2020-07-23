@@ -6,8 +6,6 @@ import me.benfah.doorsofinfinity.utils.BoxUtils;
 import me.benfah.doorsofinfinity.utils.MCUtils;
 import me.benfah.doorsofinfinity.utils.PortalCreationHelper;
 import net.minecraft.block.AbstractGlassBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.Item;
@@ -18,15 +16,12 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Pair;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-
-import java.util.Comparator;
 import java.util.List;
 
 public class PhotonLinkItem extends Item
@@ -39,7 +34,7 @@ public class PhotonLinkItem extends Item
     @Override
     public ActionResult useOnBlock(ItemUsageContext context)
     {
-        if(context.getStack().getSubTag("PhotonLink") != null && MCUtils.immersivePortalsPresent)
+        if(!context.getWorld().isClient && context.getStack().getSubTag("PhotonLink") != null && MCUtils.immersivePortalsPresent)
         {
             CompoundTag tag = context.getStack().getSubTag("PhotonLink");
 
@@ -63,14 +58,14 @@ public class PhotonLinkItem extends Item
 
             int difference = BoxUtils.getAbsoluteHorizontal(currentFacing.getHorizontal() - savedFacing.getHorizontal());
 
-            DimensionType type = DimensionType.byRawId(tag.getInt("DimensionId"));
-
+            RegistryKey<World> worldKey = RegistryKey.of(Registry.DIMENSION, new Identifier(tag.getString("WorldName")));
+            		
             if(savedPlane.equals(currentPlane))
             {
                 PortalCreationHelper.spawnBreakable(context.getWorld(), entityVec, currentPlane.width,
                         currentPlane.height, currentPlane.axisW, currentPlane.axisH,
-                        type, vecToRender, false,
-                        Vector3f.POSITIVE_Y.getDegreesQuaternion(difference * 90), false, savedIntBox, currentIntBox, MCUtils.getServer().getWorld(type));
+                        worldKey, vecToRender, false,
+                        Vector3f.POSITIVE_Y.getDegreesQuaternion(difference * 90), false, savedIntBox, currentIntBox, context.getWorld().getServer().getWorld(worldKey));
 
                 context.getStack().removeSubTag("PhotonLink");
 

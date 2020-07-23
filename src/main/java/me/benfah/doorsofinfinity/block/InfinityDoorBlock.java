@@ -36,11 +36,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 import java.util.function.Predicate;
+
+import org.omg.CORBA.DomainManagerOperations;
 
 public class InfinityDoorBlock extends BlockWithEntity
 {
@@ -83,7 +85,7 @@ public class InfinityDoorBlock extends BlockWithEntity
     }
 
     public BlockState getStateForNeighborUpdate(BlockState state, Direction facing, BlockState neighborState,
-                                                IWorld world, BlockPos pos, BlockPos neighborPos)
+                                                WorldAccess world, BlockPos pos, BlockPos neighborPos)
     {
         DoubleBlockHalf doubleBlockHalf = (DoubleBlockHalf) state.get(HALF);
         if(facing.getAxis() == Direction.Axis.Y
@@ -125,7 +127,7 @@ public class InfinityDoorBlock extends BlockWithEntity
 
         if(otherblockState.getBlock() == this && otherblockState.get(HALF) != doubleBlockHalf)
         {
-            world.playLevelEvent(player, 2001, otherPos, Block.getRawIdFromState(otherblockState));
+            world.syncWorldEvent(player, 2001, otherPos, Block.getRawIdFromState(otherblockState));
             if(!world.isClient && !player.isCreative() && player.isUsingEffectiveTool(otherblockState))
             {
 
@@ -145,7 +147,7 @@ public class InfinityDoorBlock extends BlockWithEntity
     {
         if(world instanceof World)
         {
-            if(((World) world).getDimension().getType() == DOFDimensions.INFINITY_DIM)
+            if(((World) world).getRegistryKey().equals(DOFDimensions.INFINITY_DIM))
             {
                 return 0;
             }
@@ -264,7 +266,7 @@ public class InfinityDoorBlock extends BlockWithEntity
 
         state = (BlockState) state.cycle(OPEN);
         world.setBlockState(pos, state, 10);
-        world.playLevelEvent(player, (Boolean) state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+        world.syncWorldEvent(player, (Boolean) state.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
 
         if(!world.isClient)
         {
@@ -346,7 +348,7 @@ public class InfinityDoorBlock extends BlockWithEntity
 
     private void playOpenCloseSound(World world, BlockPos pos, boolean open)
     {
-        world.playLevelEvent((PlayerEntity) null, open ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos,
+        world.syncWorldEvent((PlayerEntity) null, open ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos,
                 0);
     }
 

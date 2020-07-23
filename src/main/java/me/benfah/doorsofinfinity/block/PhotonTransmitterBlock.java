@@ -65,7 +65,7 @@ public class PhotonTransmitterBlock extends GlassBlock
                 planeInfo.toCompound(tag);
 
                 tag.putInt("Direction", direction.getHorizontal());
-                tag.putInt("DimensionId", world.getDimension().getType().getRawId());
+                tag.putString("WorldName", world.getRegistryKey().getValue().toString());
 
                 player.sendMessage(new TranslatableText("lore.doorsofinfinity.linked"), false);
 

@@ -2,17 +2,14 @@ package me.benfah.doorsofinfinity.item;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.TallBlockItem;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class InfinityDoorItem extends TallBlockItem

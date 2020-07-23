@@ -74,7 +74,7 @@ public class InfinityDoorBlockEntityRenderer extends BlockEntityRenderer<Infinit
                 matrices.translate(0.5, 1.9, -0.001);
                 matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180));
                 matrices.scale(0.01F, 0.01F, 1);
-                drawCenteredTextWithRect(new TranslatableText("text.doorsofinfinity.installed_upgrades", entity.installedUpgrades).asFormattedString(), 0, 0xFFFFFF, false, matrices.peek().getModel(), vertexConsumers, false, 0xFFFFFF, light, 0.168F, 0.341F, 0.156F, 0.5F);
+                drawCenteredTextWithRect(new TranslatableText("text.doorsofinfinity.installed_upgrades", entity.installedUpgrades).getString(), 0, 0xFFFFFF, false, matrices, vertexConsumers, false, 0xFFFFFF, light, 0.168F, 0.341F, 0.156F, 0.5F);
 
                 matrices.pop();
             }
@@ -103,29 +103,32 @@ public class InfinityDoorBlockEntityRenderer extends BlockEntityRenderer<Infinit
 
     public void drawRightBoundText(String text, int x, int y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light)
     {
-        int textLength = dispatcher.getTextRenderer().getStringWidth(text);
+        int textLength = dispatcher.getTextRenderer().getWidth(text);
         dispatcher.getTextRenderer().draw(text, x - textLength, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
     }
 
     public void drawCenteredText(String text, int y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light)
     {
-        int textLength = dispatcher.getTextRenderer().getStringWidth(text);
+        int textLength = dispatcher.getTextRenderer().getWidth(text);
         dispatcher.getTextRenderer().draw(text, -textLength / 2, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
     }
 
-    public void drawCenteredTextWithRect(String text, int y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light, float r, float g, float b, float a)
+    public void drawCenteredTextWithRect(String text, int y, int color, boolean shadow, MatrixStack matrices, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light, float r, float g, float b, float a)
     {
-        int textLength = dispatcher.getTextRenderer().getStringWidth(text);
+        int textLength = dispatcher.getTextRenderer().getWidth(text);
         int border = 4;
 
-        drawRect(vertexConsumers, matrix, -textLength / 2 - border, y - 2, +textLength / 2 + border, y + dispatcher.getTextRenderer().fontHeight + 2, r, g, b, a);
-        drawCenteredText(text, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
+        drawRect(vertexConsumers, matrices.peek().getModel(), -textLength / 2 - border, y - 2, +textLength / 2 + border, y + dispatcher.getTextRenderer().fontHeight + 2, r, g, b, a);
+        matrices.push();
+        matrices.translate(0, 0, -0.001);
+        drawCenteredText(text, y, color, shadow, matrices.peek().getModel(), vertexConsumers, seeThrough, backgroundColor, light);
+        matrices.pop();
     }
 
     public void drawRightBoundTextWithRect(String text, int x, int y, int color, boolean shadow, Matrix4f matrix, VertexConsumerProvider vertexConsumers, boolean seeThrough, int backgroundColor, int light, float r, float g, float b, float a)
     {
         int border = 4;
-        int textLength = dispatcher.getTextRenderer().getStringWidth(text);
+        int textLength = dispatcher.getTextRenderer().getWidth(text);
         drawRect(vertexConsumers, matrix, x - textLength - border * 2, y - 2, x, y + dispatcher.getTextRenderer().fontHeight + 2, r, g, b, a);
         drawRightBoundText(text, x - border, y, color, shadow, matrix, vertexConsumers, seeThrough, backgroundColor, light);
     }

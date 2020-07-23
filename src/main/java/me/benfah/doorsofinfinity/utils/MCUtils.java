@@ -2,7 +2,6 @@ package me.benfah.doorsofinfinity.utils;
 
 import java.lang.ref.WeakReference;
 
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 
 public class MCUtils

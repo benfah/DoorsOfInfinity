@@ -10,11 +10,6 @@ import net.minecraft.util.math.*;
 import java.util.Comparator;
 import java.util.IntSummaryStatistics;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.IntSupplier;
-import java.util.function.ToIntFunction;
-import java.util.stream.IntStream;
 
 public class BoxUtils
 {
