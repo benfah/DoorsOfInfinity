@@ -22,18 +22,13 @@ public class EmptyChunkGenerator extends ChunkGenerator {
 
 	public static final Codec<EmptyChunkGenerator> CODEC = RecordCodecBuilder.create((instance) ->
 			instance.group(
-					BiomeSource.field_24713.fieldOf("biome_source")
+					BiomeSource.CODEC.fieldOf("biome_source")
 							.forGetter((generator) -> generator.biomeSource)
 			).apply(instance, instance.stable(EmptyChunkGenerator::new))
 	);
 
 	public EmptyChunkGenerator(BiomeSource biomeSource) {
 		super(biomeSource, new StructuresConfig(Optional.empty(), Collections.emptyMap()));
-	}
-
-	@Override
-	protected Codec<? extends ChunkGenerator> method_28506() {
-		return CODEC;
 	}
 
 	@Override
@@ -50,16 +45,6 @@ public class EmptyChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void setStructureStarts(StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long l) {
-
-	}
-
-	@Override
-	public void addStructureReferences(WorldAccess world, StructureAccessor accessor, Chunk chunk) {
-
-	}
-
-	@Override
 	public int getHeight(int x, int z, Heightmap.Type heightmapType) {
 		return 0;
 	}
@@ -67,5 +52,11 @@ public class EmptyChunkGenerator extends ChunkGenerator {
 	@Override
 	public BlockView getColumnSample(int x, int z) {
 		return new VerticalBlockSample(new BlockState[0]);
+	}
+
+	@Override
+	protected Codec<? extends ChunkGenerator> getCodec()
+	{
+		return CODEC;
 	}
 }

@@ -13,12 +13,12 @@ import me.benfah.doorsofinfinity.utils.BoxUtils;
 import me.benfah.doorsofinfinity.utils.MCUtils;
 import me.benfah.doorsofinfinity.utils.PortalCreationHelper;
 import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
-import net.fabricmc.fabric.api.dimension.v1.FabricDimensions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -30,7 +30,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.lwjgl.system.CallbackI;
 
-public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, BlockEntityClientSerializable
+public class InfinityDoorBlockEntity extends BlockEntity implements BlockEntityClientSerializable
 {
 
 	public static final int MAX_UPGRADES = 4;
@@ -76,7 +76,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, Bl
 					10);
 
 			if (MCUtils.immersivePortalsPresent && world.getRegistryKey().equals(DOFDimensions.INFINITY_DIM)
-					&& world.getEntities(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).isEmpty())
+					&& world.getEntitiesByClass(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).isEmpty())
 			{
 				deleteSyncPortal();
 				PortalManipulation.completeBiWayPortal(getSyncEntity().localPortal, Portal.entityType);
@@ -102,7 +102,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, Bl
 	
 	private void deletePortals(World world, BlockPos pos)
 	{
-		world.getEntities(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).forEach((portal) ->
+		world.getEntitiesByClass(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).forEach((portal) ->
 		{
 			portal.remove();
 		});
@@ -130,12 +130,12 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, Bl
 	{
 		BlockState state = getCachedState();
 			otherWorld.setBlockState(otherPos,
-					DOFBlocks.INFINITY_DOOR.getDefaultState()
+					DOFBlocks.GENERATED_INFINITY_DOOR.getDefaultState()
 							.with(InfinityDoorBlock.HINGE, state.get(InfinityDoorBlock.HINGE))
 							.with(InfinityDoorBlock.FACING, MCUtils.immersivePortalsPresent ? Direction.NORTH : Direction.SOUTH)
 							.with(InfinityDoorBlock.HALF, DoubleBlockHalf.LOWER));
 			otherWorld.setBlockState(otherPos.up(),
-					DOFBlocks.INFINITY_DOOR.getDefaultState()
+					DOFBlocks.GENERATED_INFINITY_DOOR.getDefaultState()
 							.with(InfinityDoorBlock.HINGE, state.get(InfinityDoorBlock.HINGE))
 							.with(InfinityDoorBlock.FACING, MCUtils.immersivePortalsPresent ? Direction.NORTH : Direction.SOUTH)
 							.with(InfinityDoorBlock.HALF, DoubleBlockHalf.UPPER));
@@ -231,27 +231,5 @@ public class InfinityDoorBlockEntity extends BlockEntity implements Tickable, Bl
 
 		return super.toTag(tag);
 	}
-
-	@SuppressWarnings("deprecation")
-	@Override
-	public void tick()
-	{
-		if(!world.isClient && !MCUtils.immersivePortalsPresent && getCachedState().get(InfinityDoorBlock.HALF) == DoubleBlockHalf.LOWER && syncDoorWorld != null)
-		{
-			world.getEntities(null, BoxUtils.getBoxInclusive(pos, pos.up())).forEach(entity ->
-			{
-				FabricDimensions.teleport(entity, (ServerWorld) syncDoorWorld, (teleported, destination, direction, v, v1) -> {
-					if(link != null)
-						return new BlockPattern.TeleportTarget(link.getPlayerPosCentered().add(0, 0, -1), Vec3d.ZERO, 180);
-					else
-					{
-						Direction facing = getSyncEntity().getCachedState().get(InfinityDoorBlock.FACING);
-						BlockPos pos = syncDoorPos.add(facing.getOpposite().getVector());
-						return new BlockPattern.TeleportTarget(new Vec3d(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5), Vec3d.ZERO, 180);
-					}
-				});
-			});
-
-		}
-	}
+	
 }

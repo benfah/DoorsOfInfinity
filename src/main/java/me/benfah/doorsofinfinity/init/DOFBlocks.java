@@ -4,7 +4,7 @@ import me.benfah.doorsofinfinity.DOFMod;
 import me.benfah.doorsofinfinity.block.InfinityBlock;
 import me.benfah.doorsofinfinity.block.InfinityDoorBlock;
 import me.benfah.doorsofinfinity.block.PhotonTransmitterBlock;
-import net.fabricmc.fabric.api.block.FabricBlockSettings;
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -15,21 +15,21 @@ import net.minecraft.util.registry.Registry;
 public class DOFBlocks
 {
 	
-	public static Block BLOCK_OF_INFINITY = new InfinityBlock(FabricBlockSettings.copy(Blocks.BEDROCK).build());
-	public static Block SIMULATED_BLOCK_OF_INFINITY = new Block(FabricBlockSettings.copy(Blocks.STONE).build());
+	public static Block GENERATED_INFINITY_BLOCK = new InfinityBlock(FabricBlockSettings.copy(Blocks.BEDROCK));
+	public static Block INFINITY_BLOCK = new Block(FabricBlockSettings.copy(Blocks.STONE));
 
-	public static InfinityDoorBlock INFINITY_DOOR = new InfinityDoorBlock(FabricBlockSettings.copy(Blocks.IRON_DOOR).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE).build());
-	public static InfinityDoorBlock SIMULATED_INFINITY_DOOR = new InfinityDoorBlock(FabricBlockSettings.copy(Blocks.IRON_DOOR).sounds(BlockSoundGroup.STONE).build());
+	public static InfinityDoorBlock GENERATED_INFINITY_DOOR = new InfinityDoorBlock(FabricBlockSettings.copy(Blocks.IRON_DOOR).strength(-1.0F, 3600000.0F).sounds(BlockSoundGroup.STONE));
+	public static InfinityDoorBlock INFINITY_DOOR = new InfinityDoorBlock(FabricBlockSettings.copy(Blocks.IRON_DOOR).sounds(BlockSoundGroup.STONE));
 
-	public static PhotonTransmitterBlock PHOTON_TRANSMITTER = new PhotonTransmitterBlock(FabricBlockSettings.of(Material.GLASS).nonOpaque().build());
+	public static PhotonTransmitterBlock PHOTON_TRANSMITTER = new PhotonTransmitterBlock(FabricBlockSettings.of(Material.GLASS).nonOpaque());
 
 	public static void init()
 	{
-		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "block_of_infinity"), BLOCK_OF_INFINITY);
-		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "simulated_block_of_infinity"), SIMULATED_BLOCK_OF_INFINITY);
+		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "block_of_infinity"), GENERATED_INFINITY_BLOCK);
+		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "simulated_block_of_infinity"), INFINITY_BLOCK);
 
-		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "infinity_door"), INFINITY_DOOR);
-		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "simulated_infinity_door"), SIMULATED_INFINITY_DOOR);
+		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "infinity_door"), GENERATED_INFINITY_DOOR);
+		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "simulated_infinity_door"), INFINITY_DOOR);
 
 		Registry.register(Registry.BLOCK, new Identifier(DOFMod.MOD_ID, "photon_transmitter"), PHOTON_TRANSMITTER);
 

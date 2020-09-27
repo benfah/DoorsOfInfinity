@@ -42,11 +42,11 @@ public class DOFItems
 
 	public static void init()
 	{
-		INFINITY_DOOR = registerBlockItem(DOFBlocks.INFINITY_DOOR, new Settings(), InfinityDoorItem::new);
-		SIMULATED_INFINITY_DOOR = registerBlockItem(DOFBlocks.SIMULATED_INFINITY_DOOR, new Settings().group(DOF_GROUP).maxCount(1), InfinityDoorItem::new);
+		INFINITY_DOOR = registerBlockItem(DOFBlocks.GENERATED_INFINITY_DOOR, new Settings(), InfinityDoorItem::new);
+		SIMULATED_INFINITY_DOOR = registerBlockItem(DOFBlocks.INFINITY_DOOR, new Settings().group(DOF_GROUP).maxCount(1), InfinityDoorItem::new);
 
-		BLOCK_OF_INFINITY = registerBlockItem(DOFBlocks.BLOCK_OF_INFINITY, new Settings(), BlockItem::new);
-		SIMULATED_BLOCK_OF_INFINITY = registerBlockItem(DOFBlocks.SIMULATED_BLOCK_OF_INFINITY, new Settings().group(DOF_GROUP), BlockItem::new);
+		BLOCK_OF_INFINITY = registerBlockItem(DOFBlocks.GENERATED_INFINITY_BLOCK, new Settings(), BlockItem::new);
+		SIMULATED_BLOCK_OF_INFINITY = registerBlockItem(DOFBlocks.INFINITY_BLOCK, new Settings().group(DOF_GROUP), BlockItem::new);
 
 		PHOTON_TRANSMITTER = registerBlockItem(DOFBlocks.PHOTON_TRANSMITTER, new Settings().group(DOF_GROUP),
 				(block, settings) -> new LoreBlockItem(block, settings,

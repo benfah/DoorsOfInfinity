@@ -116,16 +116,16 @@ public class InfinityDimHelper
 				if(vec.getY() >= WALL_THICKNESS)
 					return Blocks.AIR.getDefaultState();
 				else
-					return DOFBlocks.BLOCK_OF_INFINITY.getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
+					return DOFBlocks.GENERATED_INFINITY_BLOCK.getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
 			});
 
 
 
 			generateCube(getBasePosition(), getInnerSize(), WALL_THICKNESS, vec -> {
 				if(vec.getY() >= WALL_THICKNESS)
-					return DOFBlocks.BLOCK_OF_INFINITY.getDefaultState();
+					return DOFBlocks.GENERATED_INFINITY_BLOCK.getDefaultState();
 				else
-					return DOFBlocks.BLOCK_OF_INFINITY.getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
+					return DOFBlocks.GENERATED_INFINITY_BLOCK.getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
 			});
 
 			linkedBlockEntity.placeSyncedDoor(world, getPlayerPos());
@@ -168,9 +168,9 @@ public class InfinityDimHelper
 
 			generateCube(getBasePosition(), getInnerSize(), WALL_THICKNESS, vec -> {
 				if(vec.getY() >= WALL_THICKNESS)
-					return DOFBlocks.BLOCK_OF_INFINITY.getDefaultState();
+					return DOFBlocks.GENERATED_INFINITY_BLOCK.getDefaultState();
 				else
-					return DOFBlocks.BLOCK_OF_INFINITY.getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
+					return DOFBlocks.GENERATED_INFINITY_BLOCK.getDefaultState().with(InfinityBlock.COLOR, InfinityBlock.Color.WHITE);
 			});
 
 			resetDoor();

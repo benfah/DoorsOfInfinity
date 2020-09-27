@@ -3,7 +3,7 @@ package me.benfah.doorsofinfinity.block;
 
 import com.qouteall.immersive_portals.Helper;
 import com.qouteall.immersive_portals.my_util.IntBox;
-import me.benfah.doorsofinfinity.init.DOFBlocks;
+
 import me.benfah.doorsofinfinity.init.DOFItems;
 import me.benfah.doorsofinfinity.utils.BoxUtils;
 import me.benfah.doorsofinfinity.utils.MCUtils;
@@ -13,21 +13,13 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Pair;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
-
-import java.util.Comparator;
-import java.util.stream.IntStream;
 
 public class PhotonTransmitterBlock extends GlassBlock
 {
@@ -56,7 +48,6 @@ public class PhotonTransmitterBlock extends GlassBlock
                 IntBox box = Helper.expandRectangle(pos,
                         testPos -> BoxUtils.hasSamePropertyValue(PhotonTransmitterBlock.FACING, world.getBlockState(testPos), state.get(PhotonTransmitterBlock.FACING)),
                         direction.getAxis());
-                Pair<BlockPos, BlockPos> anchorPositions = BoxUtils.getAnchors(box);
 
                 CompoundTag tag = player.getMainHandStack().getOrCreateSubTag("PhotonLink");
 

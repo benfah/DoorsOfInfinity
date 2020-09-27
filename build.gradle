@@ -22,19 +22,23 @@ dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
 	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 
-	include "me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable"
-	include "me.shedaniel.cloth:config-2:4.5.6"
+	include "me.sargunvohra.mcmods:autoconfig1u:${project.autoconfig_version}"
+	include "me.shedaniel.cloth:config-2:${project.cloth_version}"
 
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 	
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	
-	modImplementation "io.github.prospector:modmenu:1.13.0+build.20"
+	modImplementation "io.github.prospector:modmenu:${project.modmenu_version}"
 
-	modApi "me.sargunvohra.mcmods:autoconfig1u:3.2.0-unstable"
+	modApi("me.sargunvohra.mcmods:autoconfig1u:${project.autoconfig_version}"){
+        exclude(group: "net.fabricmc.fabric-api")
+    }
 
-	modApi "me.shedaniel.cloth:config-2:4.5.6"
+	modApi("me.shedaniel.cloth:config-2:${project.cloth_version}"){
+        exclude(group: "net.fabricmc.fabric-api")
+    }
 	
 	
 	compile fileTree(dir: 'libs', include: ['*.jar'])

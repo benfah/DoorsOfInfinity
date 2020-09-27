@@ -16,7 +16,7 @@ public class DOFMod implements ModInitializer
 	@Override
 	public void onInitialize()
 	{
-		MCUtils.immersivePortalsPresent = FabricLoader.getInstance().isModLoaded("immersive_portals");
+		MCUtils.immersivePortalsPresent = FabricLoader.getInstance().isModLoaded("imm_ptl_core");
 
 		DOFBlocks.init();
 		DOFItems.init();

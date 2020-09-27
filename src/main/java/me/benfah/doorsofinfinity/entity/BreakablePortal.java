@@ -3,9 +3,7 @@ package me.benfah.doorsofinfinity.entity;
 import com.qouteall.immersive_portals.my_util.IntBox;
 import com.qouteall.immersive_portals.portal.Portal;
 import me.benfah.doorsofinfinity.init.DOFBlocks;
-import me.benfah.doorsofinfinity.init.DOFEntities;
 import me.benfah.doorsofinfinity.utils.BoxUtils;
-import me.benfah.doorsofinfinity.utils.MCUtils;
 import net.minecraft.block.AbstractGlassBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
@@ -14,7 +12,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 
 public class BreakablePortal extends Portal
 {
@@ -27,6 +24,7 @@ public class BreakablePortal extends Portal
     public BreakablePortal(EntityType<? extends BreakablePortal> entityType, World world_1)
     {
         super(entityType, world_1);
+        setInteractable(false);
     }
     
     @Override
@@ -56,8 +54,8 @@ public class BreakablePortal extends Portal
         compoundTag.put("PhotonTransmitterL", BoxUtils.vecToTag(transmitterArea.l));
         compoundTag.put("PhotonTransmitterH", BoxUtils.vecToTag(transmitterArea.h));
 
-        compoundTag.put("GlassL", BoxUtils.vecToTag(glassArea.l));
-        compoundTag.put("GlassH", BoxUtils.vecToTag(glassArea.h));
+        compoundTag.put("GlassAreaL", BoxUtils.vecToTag(glassArea.l));
+        compoundTag.put("GlassAreaH", BoxUtils.vecToTag(glassArea.h));
 
         compoundTag.putString("WorldName", transmitterWorld.getRegistryKey().getValue().toString());
 

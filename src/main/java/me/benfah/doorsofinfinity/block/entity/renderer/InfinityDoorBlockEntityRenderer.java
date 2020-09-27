@@ -60,8 +60,9 @@ public class InfinityDoorBlockEntityRenderer extends BlockEntityRenderer<Infinit
 
         if(!MCUtils.immersivePortalsPresent)
         drawEndTexture(entity, tickDelta, matrices, vertexConsumers, direction);
-
-        HitResult rayTrace = client.player.rayTrace(client.interactionManager.getReachDistance(), tickDelta, false);
+        
+        
+        HitResult rayTrace = client.player.raycast(client.interactionManager.getReachDistance(), tickDelta, false);
 
         if(client.player.isSneaking() && entity.getCachedState().get(InfinityDoorBlock.HALF) == DoubleBlockHalf.LOWER)
         {

@@ -115,30 +115,38 @@ public class InfinityDoorBlock extends BlockWithEntity
 
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player)
     {
-        BlockPos lowerPos = state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
-        BlockState lowerBlockState = world.getBlockState(lowerPos);
-        InfinityDoorBlockEntity firstEntity = (InfinityDoorBlockEntity) world.getBlockEntity(lowerPos);
-
-
-        DoubleBlockHalf doubleBlockHalf = (DoubleBlockHalf) state.get(HALF);
-        BlockPos otherPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
-        BlockState otherblockState = world.getBlockState(otherPos);
-        InfinityDoorBlockEntity lowerBlockEntity = (InfinityDoorBlockEntity) world.getBlockEntity(lowerPos);
-
-        if(otherblockState.getBlock() == this && otherblockState.get(HALF) != doubleBlockHalf)
-        {
-            world.syncWorldEvent(player, 2001, otherPos, Block.getRawIdFromState(otherblockState));
-            if(!world.isClient && !player.isCreative() && player.isUsingEffectiveTool(otherblockState))
-            {
-
-                Block.dropStacks(lowerBlockState, world, lowerPos, world.getBlockEntity(lowerPos));
-            }
-            world.setBlockState(otherPos, Blocks.AIR.getDefaultState(), 35);
-        }
-        if(!world.isClient && MCUtils.immersivePortalsPresent)
-        {
-            lowerBlockEntity.deleteLocalPortal();
-        }
+    	if(world.getRegistryKey().equals(DOFDimensions.INFINITY_DIM))
+    	{
+    		
+    	}
+    	else
+    	{
+    	
+	        BlockPos lowerPos = state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
+	        BlockState lowerBlockState = world.getBlockState(lowerPos);
+	        InfinityDoorBlockEntity firstEntity = (InfinityDoorBlockEntity) world.getBlockEntity(lowerPos);
+	
+	
+	        DoubleBlockHalf doubleBlockHalf = (DoubleBlockHalf) state.get(HALF);
+	        BlockPos otherPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
+	        BlockState otherblockState = world.getBlockState(otherPos);
+	        InfinityDoorBlockEntity lowerBlockEntity = (InfinityDoorBlockEntity) world.getBlockEntity(lowerPos);
+	
+	        if(otherblockState.getBlock() == this && otherblockState.get(HALF) != doubleBlockHalf)
+	        {
+	            world.syncWorldEvent(player, 2001, otherPos, Block.getRawIdFromState(otherblockState));
+	            if(!world.isClient && !player.isCreative() && player.isUsingEffectiveTool(otherblockState))
+	            {
+	
+	                Block.dropStacks(lowerBlockState, world, lowerPos, world.getBlockEntity(lowerPos));
+	            }
+	            world.setBlockState(otherPos, Blocks.AIR.getDefaultState(), 35);
+	        }
+	        if(!world.isClient && MCUtils.immersivePortalsPresent)
+	        {
+	            lowerBlockEntity.deleteLocalPortal();
+	        }
+    	}
         super.onBreak(world, pos, state, player);
     }
 
@@ -330,16 +338,16 @@ public class InfinityDoorBlock extends BlockWithEntity
 
     private boolean topAndBottomMatch(BlockPos pos, WorldView world)
     {
-        Predicate<Block> matchingBlocks = (block) -> block == DOFBlocks.SIMULATED_BLOCK_OF_INFINITY
-                || block == DOFBlocks.BLOCK_OF_INFINITY;
+        Predicate<Block> matchingBlocks = (block) -> block == DOFBlocks.INFINITY_BLOCK
+                || block == DOFBlocks.GENERATED_INFINITY_BLOCK;
         return matchingBlocks.test(world.getBlockState(pos.down()).getBlock())
                 && matchingBlocks.test(world.getBlockState(pos.up(2)).getBlock());
     }
 
     private boolean sideMatches(BlockPos pos, WorldView world, Direction d)
     {
-        Predicate<Block> matchingBlocks = (block) -> block == DOFBlocks.SIMULATED_BLOCK_OF_INFINITY
-                || block == DOFBlocks.BLOCK_OF_INFINITY;
+        Predicate<Block> matchingBlocks = (block) -> block == DOFBlocks.INFINITY_BLOCK
+                || block == DOFBlocks.GENERATED_INFINITY_BLOCK;
         BlockPos sidePos = pos.add(d.getVector());
 
         return matchingBlocks.test(world.getBlockState(sidePos).getBlock())
