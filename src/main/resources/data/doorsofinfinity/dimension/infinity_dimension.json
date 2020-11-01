@@ -4,6 +4,7 @@
     "type": "minecraft:flat",
     "seed": 0,
     "settings": {
+      "biome": "doorsofinfinity:empty_biome",
       "layers": [
         {
           "block": "minecraft:air",
