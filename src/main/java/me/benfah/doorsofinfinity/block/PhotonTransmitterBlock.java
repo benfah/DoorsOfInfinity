@@ -39,7 +39,7 @@ public class PhotonTransmitterBlock extends GlassBlock
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit)
     {
-        if(hand == Hand.MAIN_HAND && !world.isClient && !player.getMainHandStack().isEmpty() && MCUtils.immersivePortalsPresent)
+        if(hand == Hand.MAIN_HAND && !world.isClient && !player.getMainHandStack().isEmpty() && MCUtils.isIPPresent())
         {
             if(player.getMainHandStack().getItem() == DOFItems.PHOTON_LINK)
             {

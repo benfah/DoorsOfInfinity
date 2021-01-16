@@ -2,7 +2,7 @@
   "has_raids": false,
   "logical_height": 256,
   "infiniburn": "minecraft:infiniburn_overworld",
-  "ambient_light": 1.0,
+  "ambient_light": 0.9,
   "fixed_time": 0,
   "piglin_safe": false,
   "bed_works": false,

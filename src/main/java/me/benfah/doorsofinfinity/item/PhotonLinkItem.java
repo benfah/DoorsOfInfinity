@@ -34,7 +34,7 @@ public class PhotonLinkItem extends Item
     @Override
     public ActionResult useOnBlock(ItemUsageContext context)
     {
-        if(!context.getWorld().isClient && context.getStack().getSubTag("PhotonLink") != null && MCUtils.immersivePortalsPresent)
+        if(!context.getWorld().isClient && context.getStack().getSubTag("PhotonLink") != null && MCUtils.isIPPresent())
         {
             CompoundTag tag = context.getStack().getSubTag("PhotonLink");
 
@@ -81,7 +81,7 @@ public class PhotonLinkItem extends Item
     {
         CompoundTag tag = stack.getSubTag("PhotonLink");
 
-        if(!MCUtils.immersivePortalsPresent)
+        if(!MCUtils.isIPPresent())
         tooltip.add(new TranslatableText("lore.doorsofinfinity.ip_not_present").formatted(Formatting.GRAY));
 
         if(tag != null)

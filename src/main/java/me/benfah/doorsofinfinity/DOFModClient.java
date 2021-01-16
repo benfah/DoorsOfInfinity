@@ -1,6 +1,7 @@
 package me.benfah.doorsofinfinity;
 
 import com.qouteall.immersive_portals.render.PortalEntityRenderer;
+
 import me.benfah.doorsofinfinity.block.entity.renderer.InfinityDoorBlockEntityRenderer;
 import me.benfah.doorsofinfinity.init.DOFBlockEntities;
 import me.benfah.doorsofinfinity.init.DOFBlocks;
@@ -21,12 +22,10 @@ public class DOFModClient implements ClientModInitializer
 	{
 		BlockRenderLayerMap.INSTANCE.putBlock(DOFBlocks.GENERATED_INFINITY_DOOR, RenderLayer.getCutout());
 		BlockRenderLayerMap.INSTANCE.putBlock(DOFBlocks.INFINITY_DOOR, RenderLayer.getCutout());
-//		BlockRenderLayerMap.INSTANCE.putBlock(DOFBlocks.PHOTON_TRANSMITTER, RenderLayer.getCutout());
 
 		BlockEntityRendererRegistry.INSTANCE.register(DOFBlockEntities.INFINITY_DOOR, InfinityDoorBlockEntityRenderer::new);
 
-
-		if(MCUtils.immersivePortalsPresent)
+		if(MCUtils.isIPPresent())
 		{
 			EntityRendererRegistry.INSTANCE.register(DOFEntities.BREAKABLE_PORTAL, (entityRenderDispatcher, context) -> new PortalEntityRenderer(entityRenderDispatcher));
 		}

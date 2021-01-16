@@ -15,7 +15,7 @@ public class LoreBlockItem extends BlockItem
 
     Function<ItemStack, Text>[] functions;
 
-    public LoreBlockItem(Block block, Settings settings, Function<ItemStack, Text>... functions)
+	public LoreBlockItem(Block block, Settings settings, Function<ItemStack, Text>... functions)
     {
         super(block, settings);
         this.functions = functions;

@@ -19,7 +19,6 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -41,8 +40,6 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 import java.util.function.Predicate;
-
-import org.omg.CORBA.DomainManagerOperations;
 
 public class InfinityDoorBlock extends BlockWithEntity
 {
@@ -124,9 +121,6 @@ public class InfinityDoorBlock extends BlockWithEntity
     	
 	        BlockPos lowerPos = state.get(HALF) == DoubleBlockHalf.LOWER ? pos : pos.down();
 	        BlockState lowerBlockState = world.getBlockState(lowerPos);
-	        InfinityDoorBlockEntity firstEntity = (InfinityDoorBlockEntity) world.getBlockEntity(lowerPos);
-	
-	
 	        DoubleBlockHalf doubleBlockHalf = (DoubleBlockHalf) state.get(HALF);
 	        BlockPos otherPos = doubleBlockHalf == DoubleBlockHalf.LOWER ? pos.up() : pos.down();
 	        BlockState otherblockState = world.getBlockState(otherPos);
@@ -142,7 +136,7 @@ public class InfinityDoorBlock extends BlockWithEntity
 	            }
 	            world.setBlockState(otherPos, Blocks.AIR.getDefaultState(), 35);
 	        }
-	        if(!world.isClient && MCUtils.immersivePortalsPresent)
+	        if(!world.isClient && MCUtils.isIPPresent())
 	        {
 	            lowerBlockEntity.deleteLocalPortal();
 	        }

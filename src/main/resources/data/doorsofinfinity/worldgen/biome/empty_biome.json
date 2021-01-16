@@ -29,6 +29,7 @@
     "water_ambient": [],
     "misc": []
   },
+  "grass_color_modifier": "none",
   "spawn_costs": {},
   "creature_spawn_probability": 0,
   "player_spawn_friendly": false,

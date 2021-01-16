@@ -2,6 +2,7 @@ package me.benfah.doorsofinfinity.entity;
 
 import com.qouteall.immersive_portals.my_util.IntBox;
 import com.qouteall.immersive_portals.portal.Portal;
+
 import me.benfah.doorsofinfinity.init.DOFBlocks;
 import me.benfah.doorsofinfinity.utils.BoxUtils;
 import net.minecraft.block.AbstractGlassBlock;

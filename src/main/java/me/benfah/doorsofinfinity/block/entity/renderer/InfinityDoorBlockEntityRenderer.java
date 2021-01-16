@@ -1,7 +1,6 @@
 package me.benfah.doorsofinfinity.block.entity.renderer;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import me.benfah.doorsofinfinity.block.InfinityDoorBlock;
 import me.benfah.doorsofinfinity.block.entity.InfinityDoorBlockEntity;
@@ -58,7 +57,7 @@ public class InfinityDoorBlockEntityRenderer extends BlockEntityRenderer<Infinit
     {
         Direction direction = entity.getCachedState().get(InfinityDoorBlock.FACING);
 
-        if(!MCUtils.immersivePortalsPresent)
+        if(!MCUtils.isIPPresent())
         drawEndTexture(entity, tickDelta, matrices, vertexConsumers, direction);
         
         
@@ -139,9 +138,7 @@ public class InfinityDoorBlockEntityRenderer extends BlockEntityRenderer<Infinit
         matrixStack.push();
         matrixStack.translate(direction.getVector().getX() * 0.1, 0, direction.getVector().getZ() * 0.1);
         RANDOM.setSeed(31100L);
-        double d = endPortalBlockEntity.getPos().getSquaredDistance(this.dispatcher.camera.getPos(), true);
-        int k = this.getLayersToRender(d);
-
+        
         Matrix4f matrix4f = matrixStack.peek().getModel();
         this.drawEndLayer(endPortalBlockEntity, 0.15F, matrix4f, vertexConsumerProvider.getBuffer((RenderLayer)field_21732.get(0)));
 

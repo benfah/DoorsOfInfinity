@@ -16,19 +16,13 @@ import net.fabricmc.fabric.api.block.entity.BlockEntityClientSerializable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.math.*;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
-import org.lwjgl.system.CallbackI;
 
 public class InfinityDoorBlockEntity extends BlockEntity implements BlockEntityClientSerializable
 {
@@ -75,7 +69,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements BlockEntityC
 							.with(InfinityDoorBlock.OPEN, getCachedState().get(InfinityDoorBlock.OPEN)),
 					10);
 
-			if (MCUtils.immersivePortalsPresent && world.getRegistryKey().equals(DOFDimensions.INFINITY_DIM)
+			if (MCUtils.isIPPresent() && world.getRegistryKey().equals(DOFDimensions.INFINITY_DIM)
 					&& world.getEntitiesByClass(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).isEmpty())
 			{
 				deleteSyncPortal();
@@ -116,7 +110,7 @@ public class InfinityDoorBlockEntity extends BlockEntity implements BlockEntityC
 		Quaternion rot = new Quaternion(Vector3f.POSITIVE_Y, direction.getOpposite().getHorizontal() * 90, true);
 
 		PersonalDimension personalDim = getOrCreateLinkedDimension();
-		if(MCUtils.immersivePortalsPresent)
+		if(MCUtils.isIPPresent())
 		{
 			deleteSyncPortal();
 
@@ -132,12 +126,12 @@ public class InfinityDoorBlockEntity extends BlockEntity implements BlockEntityC
 			otherWorld.setBlockState(otherPos,
 					DOFBlocks.GENERATED_INFINITY_DOOR.getDefaultState()
 							.with(InfinityDoorBlock.HINGE, state.get(InfinityDoorBlock.HINGE))
-							.with(InfinityDoorBlock.FACING, MCUtils.immersivePortalsPresent ? Direction.NORTH : Direction.SOUTH)
+							.with(InfinityDoorBlock.FACING, MCUtils.isIPPresent() ? Direction.NORTH : Direction.SOUTH)
 							.with(InfinityDoorBlock.HALF, DoubleBlockHalf.LOWER));
 			otherWorld.setBlockState(otherPos.up(),
 					DOFBlocks.GENERATED_INFINITY_DOOR.getDefaultState()
 							.with(InfinityDoorBlock.HINGE, state.get(InfinityDoorBlock.HINGE))
-							.with(InfinityDoorBlock.FACING, MCUtils.immersivePortalsPresent ? Direction.NORTH : Direction.SOUTH)
+							.with(InfinityDoorBlock.FACING, MCUtils.isIPPresent() ? Direction.NORTH : Direction.SOUTH)
 							.with(InfinityDoorBlock.HALF, DoubleBlockHalf.UPPER));
 
 

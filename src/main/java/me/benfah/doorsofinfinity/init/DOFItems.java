@@ -1,6 +1,5 @@
 package me.benfah.doorsofinfinity.init;
 
-import com.qouteall.immersive_portals.McHelper;
 import me.benfah.doorsofinfinity.DOFMod;
 import me.benfah.doorsofinfinity.item.DimensionalShardItem;
 import me.benfah.doorsofinfinity.item.InfinityDoorItem;
@@ -17,8 +16,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 
+import java.util.Arrays;
 import java.util.function.BiFunction;
-import java.util.function.Function;
+import java.util.function.BooleanSupplier;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class DOFItems
 {
@@ -48,24 +50,28 @@ public class DOFItems
 		BLOCK_OF_INFINITY = registerBlockItem(DOFBlocks.GENERATED_INFINITY_BLOCK, new Settings(), BlockItem::new);
 		SIMULATED_BLOCK_OF_INFINITY = registerBlockItem(DOFBlocks.INFINITY_BLOCK, new Settings().group(DOF_GROUP), BlockItem::new);
 
-		PHOTON_TRANSMITTER = registerBlockItem(DOFBlocks.PHOTON_TRANSMITTER, new Settings().group(DOF_GROUP),
-				(block, settings) -> new LoreBlockItem(block, settings,
-						stack -> !MCUtils.immersivePortalsPresent ? new TranslatableText("lore.doorsofinfinity.ip_not_present").formatted(Formatting.GRAY) : null));
+		PHOTON_TRANSMITTER = registerBlockItem(DOFBlocks.PHOTON_TRANSMITTER, new Settings().group(DOF_GROUP), BlockItem::new, MCUtils::isIPPresent);
 
-		PHOTON_LINK = registerItem("photon_link", new PhotonLinkItem(new Settings().group(DOF_GROUP).maxCount(1)));
+		PHOTON_LINK = registerItem("photon_link", new PhotonLinkItem(new Settings().group(DOF_GROUP).maxCount(1)), MCUtils::isIPPresent);
 
 		DIMENSIONAL_SHARD = registerItem("dimensional_shard", new DimensionalShardItem(new Settings().group(DOF_GROUP).maxCount(16)));
 	}
 
-	public static <T extends Item> T registerItem(String name, T item)
+	public static <T extends Item> T registerItem(String name, T item, BooleanSupplier... conditions)
 	{
-		return Registry.register(Registry.ITEM, new Identifier(DOFMod.MOD_ID, name), item);
+		if(conditions.length == 0 || Arrays.stream(conditions).parallel().allMatch(s -> s.getAsBoolean()))
+			return Registry.register(Registry.ITEM, new Identifier(DOFMod.MOD_ID, name), item);
+		return null;
 	}
 
-	public static <T extends Item> T registerBlockItem(Block block, Settings itemSettings, BiFunction<Block, Settings, T> itemFactory)
+	public static <T extends Item> T registerBlockItem(Block block, Settings itemSettings, BiFunction<Block, Settings, T> itemFactory, BooleanSupplier... conditions)
 	{
-		T item = itemFactory.apply(block, itemSettings);
-		return registerItem(Registry.BLOCK.getId(block).getPath(), item);
+		if(conditions.length == 0 || Arrays.stream(conditions).parallel().allMatch(s -> s.getAsBoolean()))
+		{
+			T item = itemFactory.apply(block, itemSettings);
+			return registerItem(Registry.BLOCK.getId(block).getPath(), item);
+		}
+		return null;
 	}
 
 }

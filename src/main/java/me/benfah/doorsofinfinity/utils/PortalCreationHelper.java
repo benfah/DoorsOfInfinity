@@ -1,8 +1,9 @@
 package me.benfah.doorsofinfinity.utils;
 
+import com.qouteall.immersive_portals.my_util.IntBox;
 import com.qouteall.immersive_portals.portal.Portal;
 import com.qouteall.immersive_portals.portal.PortalManipulation;
-import com.qouteall.immersive_portals.my_util.IntBox;
+
 import me.benfah.doorsofinfinity.entity.BreakablePortal;
 import me.benfah.doorsofinfinity.init.DOFEntities;
 import net.minecraft.util.math.Direction;
@@ -47,7 +48,7 @@ public class PortalCreationHelper
 												 IntBox transmitterBox, IntBox glassBox, World transmitterWorld)
 	{
 		BreakablePortal portal = new BreakablePortal(DOFEntities.BREAKABLE_PORTAL, world);
-
+		
 		portal.width = width;
 		portal.height = height;
 		portal.axisH = new Vec3d(axisH.getX(), axisH.getY(), axisH.getZ());

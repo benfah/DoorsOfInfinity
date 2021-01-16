@@ -1,6 +1,5 @@
 package me.benfah.doorsofinfinity.utils;
 
-import com.qouteall.immersive_portals.my_util.IntBox;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.state.property.Property;
@@ -10,6 +9,8 @@ import net.minecraft.util.math.*;
 import java.util.Comparator;
 import java.util.IntSummaryStatistics;
 import java.util.Optional;
+
+import com.qouteall.immersive_portals.my_util.IntBox;
 
 public class BoxUtils
 {
@@ -21,8 +22,8 @@ public class BoxUtils
 
 	public static Pair<BlockPos, BlockPos> getAnchors(IntBox box)
 	{
-		BlockPos lowAnchorPos = box.stream().min(Comparator.<BlockPos>comparingInt(Vec3i::getX).<BlockPos>thenComparingInt(Vec3i::getY).<BlockPos>thenComparingInt(Vec3i::getZ)).get();
-		BlockPos highAnchorPos = box.stream().min(Comparator.<BlockPos>comparingInt(Vec3i::getX).<BlockPos>thenComparingInt(Vec3i::getY).<BlockPos>thenComparingInt(Vec3i::getZ)).get();
+		BlockPos lowAnchorPos = box.stream().min(Comparator.comparingInt(Vec3i::getX).thenComparingInt(Vec3i::getY).thenComparingInt(Vec3i::getZ)).get();
+		BlockPos highAnchorPos = box.stream().min(Comparator.comparingInt(Vec3i::getX).thenComparingInt(Vec3i::getY).thenComparingInt(Vec3i::getZ)).get();
 		return new Pair<>(lowAnchorPos, highAnchorPos);
 	}
 

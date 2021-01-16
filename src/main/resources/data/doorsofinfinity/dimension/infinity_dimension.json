@@ -1,19 +1,10 @@
 {
   "type": "doorsofinfinity:infinity_dimension_type",
   "generator": {
-    "type": "minecraft:flat",
-    "seed": 0,
-    "settings": {
-      "biome": "doorsofinfinity:empty_biome",
-      "layers": [
-        {
-          "block": "minecraft:air",
-          "height": 1
-        }
-      ],
-      "structures": {
-        "structures": {}
-      }
+    "type": "doorsofinfinity:empty",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "doorsofinfinity:empty_biome"
     }
   }
 }
