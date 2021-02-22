@@ -69,14 +69,18 @@ public class InfinityDoorBlockEntityRenderer extends BlockEntityRenderer<Infinit
 
             if(blockHitResult.getBlockPos().equals(entity.getPos()) || blockHitResult.getBlockPos().equals(entity.getPos().up()))
             {
-                matrices.push();
-                transformToFace(matrices, direction);
-                matrices.translate(0.5, 1.9, -0.001);
-                matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180));
-                matrices.scale(0.01F, 0.01F, 1);
-                drawCenteredTextWithRect(new TranslatableText("text.doorsofinfinity.installed_upgrades", entity.installedUpgrades).getString(), 0, 0xFFFFFF, false, matrices, vertexConsumers, false, 0xFFFFFF, light, 0.168F, 0.341F, 0.156F, 0.5F);
+                if(entity.link != null)
+                {
+                    matrices.push();
+                    transformToFace(matrices, direction);
+                    matrices.translate(0.5, 1.9, -0.001);
+                    matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180));
+                    matrices.scale(0.01F, 0.01F, 1);
+                    drawCenteredTextWithRect(new TranslatableText("text.doorsofinfinity.installed_upgrades", entity.link.getUpgrades()).getString(), 0, 0xFFFFFF, false, matrices, vertexConsumers, false, 0xFFFFFF, light, 0.168F, 0.341F, 0.156F, 0.5F);
 
-                matrices.pop();
+                    matrices.pop();
+                }
+
             }
         }
     }

@@ -1,5 +1,9 @@
 package me.benfah.doorsofinfinity.dimension;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.IntPredicate;
 
@@ -11,6 +15,8 @@ import me.benfah.doorsofinfinity.init.DOFDimensions;
 import me.benfah.doorsofinfinity.utils.MCUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -18,6 +24,7 @@ import net.minecraft.util.math.Vec3i;
 
 public class InfinityDimHelper
 {
+	private static HashMap<Integer, PersonalDimension> DIMENSION_MAP = new HashMap<>();
 	
 	public static PersonalDimension getEmptyPersonalDimension()
 	{
@@ -31,21 +38,49 @@ public class InfinityDimHelper
 		return new PersonalDimension(offset, infinityDim);
 	}
 	
-	public static PersonalDimension getPersonalDimension(int id, int upgrades)
+	public static PersonalDimension getPersonalDimension(int id, int upgrades, boolean override)
 	{
 		ServerWorld infinityDim = MCUtils.getServer().getWorld(DOFDimensions.INFINITY_DIM);
+		
+		if(!override)
+		{
+			Optional<PersonalDimension> optional = getDimension(id);
+			if(optional.isPresent())
+				return optional.get();
+		}
+		
 		return new PersonalDimension(id, upgrades, infinityDim);
 	}
 	
 	public PersonalDimension getPersonalDimensionAt(BlockPos pos)
 	{
-		return new PersonalDimension(pos.getX() / 200, MCUtils.getServer().getWorld(DOFDimensions.INFINITY_DIM));
+		int id = pos.getX() / 200;
+		return getPersonalDimension(id, 0, false);
 	}
 	
 	public static ServerWorld getInfinityDimension()
 	{
 		return MCUtils.getServer().getWorld(DOFDimensions.INFINITY_DIM);
 	}
+	
+	private static Optional<PersonalDimension> getDimension(int id)
+	{
+		return Optional.ofNullable(DIMENSION_MAP.get(id));
+	}
+	
+	public static PersonalDimension fromTag(CompoundTag tag, boolean override)
+	{
+		int dimId = tag.getInt("DimensionId");
+		int upgrades = tag.getInt("Upgrades");
+		
+		if(tag.contains("DimensionId") && tag.contains("Upgrades"))
+		{
+			return getPersonalDimension(dimId, upgrades, override);
+		}
+		return null;
+	}
+	
+	
 	
 	public static class PersonalDimension
 	{
@@ -61,6 +96,7 @@ public class InfinityDimHelper
 		{
 			this(dimOffset, world);
 			this.upgrades = upgrades;
+			DIMENSION_MAP.put(dimOffset, this);
 		}
 
 		public PersonalDimension(int dimOffset, ServerWorld world)
@@ -102,15 +138,13 @@ public class InfinityDimHelper
 				return false;
 			}
 			int prevInnerSize = getInnerSize();
-
+			
 			InfinityDoorBlockEntity linkedBlockEntity = getBlockEntity().getSyncEntity();
-
+			
+			upgrades++;
+			
 			linkedBlockEntity.deleteLocalPortal();
 			linkedBlockEntity.deleteSyncPortal();
-
-
-			linkedBlockEntity.installedUpgrades++;
-			upgrades = linkedBlockEntity.installedUpgrades;
 
 			generateCube(getBasePosition(), prevInnerSize, WALL_THICKNESS, vec -> {
 				if(vec.getY() >= WALL_THICKNESS)
@@ -129,6 +163,7 @@ public class InfinityDimHelper
 			});
 
 			linkedBlockEntity.placeSyncedDoor(world, getPlayerPos());
+			linkedBlockEntity.sync();
 			return true;
 		}
 
@@ -205,7 +240,14 @@ public class InfinityDimHelper
 				}
 			}
 		}
-
+		
+		public CompoundTag toTag(CompoundTag tag)
+		{
+			tag.putInt("DimensionId", dimId);
+			tag.putInt("Upgrades", upgrades);
+			return tag;
+		}
+		
 	}
 	
 }

@@ -6,6 +6,8 @@ import me.benfah.doorsofinfinity.utils.MCUtils;
 import me.sargunvohra.mcmods.autoconfig1u.AutoConfig;
 import me.sargunvohra.mcmods.autoconfig1u.serializer.JanksonConfigSerializer;
 import net.fabricmc.api.ModInitializer;
+import net.java.games.input.Keyboard;
+import net.minecraft.client.MinecraftClient;
 
 public class DOFMod implements ModInitializer
 {
@@ -26,7 +28,6 @@ public class DOFMod implements ModInitializer
 		DOFEntities.init();
 		
 		AutoConfig.register(DOFConfig.class, JanksonConfigSerializer::new);
-		
 	}
 
 }

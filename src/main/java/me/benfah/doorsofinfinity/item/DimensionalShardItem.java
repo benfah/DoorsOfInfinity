@@ -22,7 +22,7 @@ public class DimensionalShardItem extends Item
     public ActionResult useOnBlock(ItemUsageContext context)
     {
         BlockState state = context.getWorld().getBlockState(context.getBlockPos());
-        if(!context.getWorld().isClient &&state.getBlock() == DOFBlocks.INFINITY_DOOR && context.getPlayer().isSneaking() && context.getHand() == Hand.MAIN_HAND)
+        if(!context.getWorld().isClient && state.getBlock() == DOFBlocks.INFINITY_DOOR && context.getPlayer().isSneaking() && context.getHand() == Hand.MAIN_HAND)
         {
             BlockPos blockEntityPos = state.get(InfinityDoorBlock.HALF) == DoubleBlockHalf.LOWER ? context.getBlockPos() : context.getBlockPos().down();
             InfinityDoorBlockEntity blockEntity = (InfinityDoorBlockEntity) context.getWorld().getBlockEntity(blockEntityPos);

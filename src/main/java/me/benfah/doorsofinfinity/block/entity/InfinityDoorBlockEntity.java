@@ -24,51 +24,33 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.World;
 
-public class InfinityDoorBlockEntity extends BlockEntity implements BlockEntityClientSerializable
+public class InfinityDoorBlockEntity extends AbstractInfinityDoorBlockEntity<InfinityDoorBlockEntity> implements BlockEntityClientSerializable
 {
 
-	public static final int MAX_UPGRADES = 4;
-
 	public PersonalDimension link;
-
-	public BlockPos syncDoorPos;
-	public World syncDoorWorld;
-
-	public Portal localPortal;
-
-	public int installedUpgrades = 0;
 
 	public InfinityDoorBlockEntity()
 	{
 		super(DOFBlockEntities.INFINITY_DOOR);
 	}
-
+	
+	@Override
 	public void syncWith(InfinityDoorBlockEntity entity)
 	{
-		entity.syncDoorPos = this.pos;
-		entity.syncDoorWorld = this.world;
-		this.syncDoorPos = entity.pos;
-		this.syncDoorWorld = entity.world;
-
-		int upgrades = Math.max(entity.installedUpgrades, this.installedUpgrades);
-
-		this.installedUpgrades = upgrades;
-		entity.installedUpgrades = upgrades;
-
+		super.syncWith(entity);
+		if(link != null)
+		{
+			entity.link = link;
+		}
 		this.sync();
 		entity.sync();
 	}
-
+	
 	public void updateSyncDoor()
 	{
+		super.updateSyncDoor();
 		if (isSyncPresent())
 		{
-			syncDoorWorld.setBlockState(syncDoorPos,
-					getSyncEntity().getWorld().getBlockState(getSyncEntity().getPos())
-							.with(InfinityDoorBlock.HINGE, getCachedState().get(InfinityDoorBlock.HINGE))
-							.with(InfinityDoorBlock.OPEN, getCachedState().get(InfinityDoorBlock.OPEN)),
-					10);
-
 			if (MCUtils.isIPPresent() && world.getRegistryKey().equals(DOFDimensions.INFINITY_DIM)
 					&& world.getEntitiesByClass(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).isEmpty())
 			{
@@ -77,29 +59,6 @@ public class InfinityDoorBlockEntity extends BlockEntity implements BlockEntityC
 			}
 		}
 
-	}
-
-	public boolean isSyncPresent()
-	{
-		return syncDoorPos != null && syncDoorWorld != null && !syncDoorWorld.getBlockState(syncDoorPos).isAir();
-	}
-	
-	public void deleteLocalPortal()
-	{
-		deletePortals(world, pos);
-	}
-	
-	public void deleteSyncPortal()
-	{
-		deletePortals(syncDoorWorld, syncDoorPos);
-	}
-	
-	private void deletePortals(World world, BlockPos pos)
-	{
-		world.getEntitiesByClass(Portal.class, BoxUtils.getBoxInclusive(pos, pos.up()), null).forEach((portal) ->
-		{
-			portal.remove();
-		});
 	}
 
 	private void createSyncedPortals()
@@ -143,13 +102,15 @@ public class InfinityDoorBlockEntity extends BlockEntity implements BlockEntityC
 	@Override
 	public void fromClientTag(CompoundTag compoundTag)
 	{
-		installedUpgrades = compoundTag.getInt("Upgrades");
+		if(compoundTag.contains("PersonalDimension"))
+		this.link = InfinityDimHelper.fromTag(compoundTag.getCompound("PersonalDimension"), true);
 	}
 
 	@Override
 	public CompoundTag toClientTag(CompoundTag compoundTag)
 	{
-		compoundTag.putInt("Upgrades", installedUpgrades);
+		if(link != null)
+		compoundTag.put("PersonalDimension", link.toTag(new CompoundTag()));
 		return compoundTag;
 	}
 
@@ -158,19 +119,6 @@ public class InfinityDoorBlockEntity extends BlockEntity implements BlockEntityC
 	{
 		markDirty();
 		BlockEntityClientSerializable.super.sync();
-	}
-
-	public void syncWithDoor()
-	{
-		syncWith(getSyncEntity());
-	}
-
-	public InfinityDoorBlockEntity getSyncEntity()
-	{
-		if (syncDoorWorld == null)
-			return null;
-
-		return (InfinityDoorBlockEntity) syncDoorWorld.getBlockEntity(syncDoorPos);
 	}
 
 	public PersonalDimension getOrCreateLinkedDimension()
@@ -188,40 +136,25 @@ public class InfinityDoorBlockEntity extends BlockEntity implements BlockEntityC
 	@Override
 	public void fromTag(BlockState state, CompoundTag tag)
 	{
-
-
-		if (tag.contains("SyncDoorDimName"))
-		{
-			syncDoorWorld = MCUtils.getServer().getWorld(RegistryKey.of(Registry.DIMENSION, new Identifier(tag.getString("SyncDoorDimName"))));
-			syncDoorPos = new BlockPos(tag.getInt("SyncDoorX"), tag.getInt("SyncDoorY"), tag.getInt("SyncDoorZ"));
-		}
-
-		if(tag.contains("Upgrades"))
-		{
-			installedUpgrades = tag.getInt("Upgrades");
-		}
-
 		if (tag.contains("DimOffset"))
-			link = InfinityDimHelper.getPersonalDimension(tag.getInt("DimOffset"), installedUpgrades);
-
+			link = InfinityDimHelper.getPersonalDimension(tag.getInt("DimOffset"), tag.contains("Upgrades") ? tag.getInt("Upgrades") : 0, true);
+		
+		if(tag.contains("PersonalDimension"))
+		{
+			link = InfinityDimHelper.fromTag(tag.getCompound("PersonalDimension"), true);
+		}
+		
 		super.fromTag(state, tag);
 	}
 
 	@Override
 	public CompoundTag toTag(CompoundTag tag)
 	{
-		if (link != null)
-			tag.putInt("DimOffset", link.getDimensionOffset());
-		if (syncDoorWorld != null)
+
+		if(link != null)
 		{
-			tag.putString("SyncDoorDimName", syncDoorWorld.getRegistryKey().getValue().toString());
-
-			tag.putInt("SyncDoorX", syncDoorPos.getX());
-			tag.putInt("SyncDoorY", syncDoorPos.getY());
-			tag.putInt("SyncDoorZ", syncDoorPos.getZ());
+			tag.put("PersonalDimension", link.toTag(new CompoundTag()));
 		}
-
-		tag.putInt("Upgrades", installedUpgrades);
 
 		return super.toTag(tag);
 	}
