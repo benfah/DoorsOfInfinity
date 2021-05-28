@@ -6,6 +6,15 @@
       "entries": [
         {
           "type": "minecraft:item",
+          "conditions": [
+            {
+              "condition": "minecraft:block_state_property",
+              "block": "doorsofinfinity:simulated_infinity_door",
+              "properties": {
+                "half": "lower"
+              }
+            }
+          ],
           "functions": [
             {
               "function": "minecraft:copy_nbt",
